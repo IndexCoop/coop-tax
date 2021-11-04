@@ -1,8 +1,9 @@
 import { Button, Box, Text } from '@chakra-ui/react'
-import { useEthers, useEtherBalance } from '@usedapp/core'
+import { ChainId, useEthers, useTokenBalance } from '@usedapp/core'
 import { formatEther } from '@ethersproject/units'
 
 import Identicon from './Identicon'
+import { OWL_NFT_ADDRESS } from 'utils/constants'
 
 const ConnectButton = (props: { handleOpenModal: any }) => {
   const { account, activateBrowserWallet } = useEthers()
@@ -47,9 +48,9 @@ export default ConnectButton
 
 const ConnectToMatic = (props: { handleOpenModal: any }) => {
   const { chainId, account } = useEthers()
-  const etherBalance = useEtherBalance(account)
+  const nftBalance = useTokenBalance(OWL_NFT_ADDRESS, account)
 
-  return chainId && chainId === 137 ? (
+  return chainId && chainId === ChainId.Kovan ? (
     <Box
       display='flex'
       alignItems='center'
@@ -59,7 +60,7 @@ const ConnectToMatic = (props: { handleOpenModal: any }) => {
     >
       <Box px='3'>
         <Text color='white' fontSize='md'>
-          {etherBalance && parseFloat(formatEther(etherBalance)).toFixed(3)} ETH
+          {nftBalance && parseFloat(formatEther(nftBalance)).toFixed(3)} Hoots
         </Text>
       </Box>
       <Button

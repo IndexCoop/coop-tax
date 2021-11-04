@@ -12,9 +12,17 @@ const config = {
   },
 }
 
+const kovanConfig = {
+  readOnlyChainId: ChainId.Kovan,
+  readOnlyUrls: {
+    [ChainId.Kovan]:
+      'https://kovan.infura.io/v3/a5afec4445a3489da6bdda32a7e7d81c',
+  },
+}
+
 ReactDOM.render(
   <React.StrictMode>
-    <DAppProvider config={config}>
+    <DAppProvider config={kovanConfig}>
       <App />
     </DAppProvider>
   </React.StrictMode>,
