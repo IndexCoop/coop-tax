@@ -1,5 +1,5 @@
 import { Box, ListItem, Text } from '@chakra-ui/react'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { TokenData } from 'providers/Token'
 
 const SelectedTokens = (props: {

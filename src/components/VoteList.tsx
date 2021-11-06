@@ -1,8 +1,23 @@
-import { Box, Button, ListItem, Text } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Input,
+  ListItem,
+  Icon,
+  InputGroup,
+  InputLeftElement,
+  Stack,
+  Text,
+} from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { Autocomplete } from '@mui/material'
-import { createFilterOptions } from '@mui/material/Autocomplete'
+import {
+  AutoComplete,
+  AutoCompleteInput,
+  AutoCompleteItem,
+  AutoCompleteList,
+} from '@choc-ui/chakra-autocomplete'
+import {} from '@chakra-ui/react'
 
 import { useMaxComponents, useVote } from 'hooks/votingContract'
 import SelectedTokens from './SelectedTokens'
@@ -17,14 +32,17 @@ const VoteList = () => {
     axios
       .get('https://tokens.coingecko.com/uniswap/all.json')
       .then((response) => {
-        console.log('Token Response', response)
+        console.log('Token Response', response.data.tokens)
         setTokens(response.data.tokens)
       })
   }, [])
 
   const handleOnSelect = (item: TokenData) => {
-    let newSelected = selectedTokens.concat(item)
-    setSelectedTokens(newSelected)
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    if (selectedTokens.length < useMaxComponents()) {
+      let newSelected = selectedTokens.concat(item)
+      setSelectedTokens(newSelected)
+    }
     console.log('selected', item, selectedTokens)
   }
 
@@ -56,38 +74,27 @@ const VoteList = () => {
 
   return (
     <Box>
-      <Autocomplete
-        id='token-select'
-        sx={{ width: 300 }}
-        options={tokens}
-        autoHighlight
-        filterOptions={createFilterOptions({
-          stringify(option) {
-            return option.symbol + option.name
-          },
-          limit: 100,
-        })}
-        onChange={(_, value) => {
-          if (value != null) handleOnSelect(value)
-        }}
-        getOptionLabel={(option) => option.name}
-        renderOption={(props, option) => (
-          <ListItem>
-            <img loading='lazy' width='20' src={option.logoURI} alt='' />
-            {option.name} ({option.symbol}) - {option.address}
-          </ListItem>
-        )}
-        renderInput={(params) => (
-          <Text
-            {...params}
-            label='Choose a token'
-            inputProps={{
-              ...params.inputProps,
-              autoComplete: 'new-password', // disable autocomplete and autofill
-            }}
+      <Stack direction='column'>
+        <AutoComplete rollNavigation>
+          <AutoCompleteInput
+            variant='filled'
+            placeholder='Search basic...'
+            autoFocus
           />
-        )}
-      />
+          <AutoCompleteList>
+            {tokens.map((option, oid) => (
+              <AutoCompleteItem
+                key={`option-${oid}`}
+                value={option}
+                label={option.name}
+                textTransform='capitalize'
+              >
+                {option.symbol}
+              </AutoCompleteItem>
+            ))}
+          </AutoCompleteList>
+        </AutoComplete>
+      </Stack>
       <SelectedTokens
         selectedTokens={selectedTokens}
         handleOnVote={handleOnVote}
