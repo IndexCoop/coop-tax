@@ -1,40 +1,25 @@
-import {
-  Box,
-  Button,
-  Input,
-  ListItem,
-  Icon,
-  InputGroup,
-  InputLeftElement,
-  Stack,
-  Text,
-} from '@chakra-ui/react'
+import { Box, Button } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
-import axios from 'axios'
-import {
-  AutoComplete,
-  AutoCompleteInput,
-  AutoCompleteItem,
-  AutoCompleteList,
-} from '@choc-ui/chakra-autocomplete'
+// import axios from 'axios'
 import {} from '@chakra-ui/react'
 
 import { useMaxComponents, useVote } from 'hooks/votingContract'
 import SelectedTokens from './SelectedTokens'
 import { BigNumber } from '@ethersproject/bignumber'
+import TokenSelect from './TokenSelect'
 
 const VoteList = () => {
-  const [tokens, setTokens] = useState<TokenData[]>([])
+  // const [tokens, setTokens] = useState<TokenData[]>([])
   const [selectedTokens, setSelectedTokens] = useState<TokenData[]>([])
   const [votes, setVotes] = useState<TokenVote[]>([])
 
   useEffect(() => {
-    axios
-      .get('https://tokens.coingecko.com/uniswap/all.json')
-      .then((response) => {
-        console.log('Token Response', response.data.tokens)
-        setTokens(response.data.tokens)
-      })
+    // axios
+    //   .get('https://tokens.coingecko.com/uniswap/all.json')
+    //   .then((response) => {
+    //     console.log('Token Response', response.data.tokens)
+    //     setTokens(response.data.tokens)
+    //   })
   }, [])
 
   const handleOnSelect = (item: TokenData) => {
@@ -74,27 +59,7 @@ const VoteList = () => {
 
   return (
     <Box>
-      <Stack direction='column'>
-        <AutoComplete rollNavigation>
-          <AutoCompleteInput
-            variant='filled'
-            placeholder='Search basic...'
-            autoFocus
-          />
-          <AutoCompleteList>
-            {tokens.map((option, oid) => (
-              <AutoCompleteItem
-                key={`option-${oid}`}
-                value={option}
-                label={option.name}
-                textTransform='capitalize'
-              >
-                {option.symbol}
-              </AutoCompleteItem>
-            ))}
-          </AutoCompleteList>
-        </AutoComplete>
-      </Stack>
+      <TokenSelect handleOnSelect={handleOnSelect} />
       <SelectedTokens
         selectedTokens={selectedTokens}
         handleOnVote={handleOnVote}
