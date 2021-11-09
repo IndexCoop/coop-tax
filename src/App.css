@@ -13,3 +13,9 @@
 .App-link {
   color: #61dafb;
 }
+
+.token-select {
+  width: 35vw;
+  color: black;
+  margin: 15px 0;
+}

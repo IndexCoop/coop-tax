@@ -60,7 +60,7 @@ const ConnectToMatic = (props: { handleOpenModal: any }) => {
     >
       <Box px='3'>
         <Text color='white' fontSize='md'>
-          {nftBalance && parseFloat(formatEther(nftBalance)).toFixed(3)} Hoots
+          {nftBalance && parseFloat(formatEther(nftBalance))} NFTs
         </Text>
       </Box>
       <Button

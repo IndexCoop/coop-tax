@@ -13,7 +13,7 @@ export const useMaxComponents = (): number => {
       method: 'maxComponents',
       args: [],
     }) ?? []
-  return maxComponents.toNumber()
+  return maxComponents ? maxComponents.toNumber() : 0
 }
 
 export const useVote = (components: string[], votes: BigNumber[]) => {

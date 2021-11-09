@@ -1,34 +1,47 @@
-import { Box, Button } from '@chakra-ui/react'
-import { useEffect, useState } from 'react'
-// import axios from 'axios'
+import { Box, Button, Flex } from '@chakra-ui/react'
+import { useEffect, useRef, useState } from 'react'
+import axios from 'axios'
 import {} from '@chakra-ui/react'
 
 import { useMaxComponents, useVote } from 'hooks/votingContract'
 import SelectedTokens from './SelectedTokens'
 import { BigNumber } from '@ethersproject/bignumber'
-import TokenSelect from './TokenSelect'
+import Select, { createFilter } from 'react-select'
+import { useEthers } from '@usedapp/core'
 
 const VoteList = () => {
-  // const [tokens, setTokens] = useState<TokenData[]>([])
+  const [tokenOptions, setTokenOptions] = useState<TokenOption[]>([])
   const [selectedTokens, setSelectedTokens] = useState<TokenData[]>([])
   const [votes, setVotes] = useState<TokenVote[]>([])
+  const maxComponents = useMaxComponents()
 
   useEffect(() => {
-    // axios
-    //   .get('https://tokens.coingecko.com/uniswap/all.json')
-    //   .then((response) => {
-    //     console.log('Token Response', response.data.tokens)
-    //     setTokens(response.data.tokens)
-    //   })
+    axios
+      .get(
+        'https://unpkg.com/quickswap-default-token-list@1.2.4/build/quickswap-default.tokenlist.json'
+      )
+      .then((response) => {
+        console.log('Token Response', response.data.tokens)
+        setTokenOptions(
+          response.data.tokens.map((token: TokenData) => {
+            return { value: token.address, label: token.symbol, token: token }
+          })
+        )
+      })
   }, [])
 
   const handleOnSelect = (item: TokenData) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    if (selectedTokens.length < useMaxComponents()) {
+    if (selectedTokens.length < maxComponents) {
+      console.log(
+        'length < maxComponents',
+        selectedTokens.length,
+        maxComponents
+      )
       let newSelected = selectedTokens.concat(item)
+      console.log('newSelected', newSelected)
       setSelectedTokens(newSelected)
+      console.log('selected', item, selectedTokens)
     }
-    console.log('selected', item, selectedTokens)
   }
 
   const handleOnRemoveToken = (removedToken: TokenData) => {
@@ -58,17 +71,31 @@ const VoteList = () => {
   }
 
   return (
-    <Box>
-      <TokenSelect handleOnSelect={handleOnSelect} />
+    <Flex flexDirection='column' alignItems='center'>
+      <Select
+        isSearchable
+        name='color'
+        options={tokenOptions}
+        filterOption={createFilter({ ignoreAccents: false })}
+        onChange={(value) => {
+          if (value !== null) handleOnSelect(value.token)
+        }}
+        className='token-select'
+      />
       <SelectedTokens
         selectedTokens={selectedTokens}
         handleOnVote={handleOnVote}
         handleOnRemoveToken={handleOnRemoveToken}
       />
-      <Button colorScheme='telegram' variant='solid' onClick={handleOnSubmit}>
+      <Button
+        width='20vw'
+        colorScheme='telegram'
+        variant='solid'
+        onClick={handleOnSubmit}
+      >
         Give a Hoot
       </Button>
-    </Box>
+    </Flex>
   )
 }
 
@@ -86,4 +113,10 @@ export interface TokenData {
 export interface TokenVote {
   address: string
   votes: number
+}
+
+export interface TokenOption {
+  value: string
+  label: string
+  token: TokenData
 }
