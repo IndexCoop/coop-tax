@@ -1,10 +1,10 @@
 /** ENV Vars */
 export const OWL_NFT_ADDRESS =
   process.env.REACT_APP_OWL_NFT_ADDRESS ||
-  '0xCd79A0B9aeca0eCE7eA59d14338ea330cb1cb2d7'
+  '0xbA08D93EC15Df479edDE9b3769c937298aa3F3F4'
 export const APE_REBALANCE_EXT_ADDRESS =
   process.env.REACT_APP_APE_REBALANCE_EXT_ADDRESS ||
-  '0x300C1642A2997C0472320677D9B1CEA90ab5dE0d'
+  '0xECdBE5b6C30C1bd4080a37Bb82d92408a40C1C9a'
 
 /** ABIs */
 export const OWL_NFT_ABI = [
@@ -289,6 +289,18 @@ export const APE_REBALANCE_EXT_ABI = [
         type: 'address',
       },
       { internalType: 'contract OwlNFT', name: '_owlNft', type: 'address' },
+      {
+        internalType: 'contract IUniswapV2Router',
+        name: '_sushiRouter',
+        type: 'address',
+      },
+      {
+        internalType: 'contract IUniswapV2Router',
+        name: '_quickRouter',
+        type: 'address',
+      },
+      { internalType: 'contract IERC20', name: '_weth', type: 'address' },
+      { internalType: 'uint256', name: '_minWethLiquidity', type: 'uint256' },
       { internalType: 'uint256', name: '_startTime', type: 'uint256' },
       { internalType: 'uint256', name: '_epochLength', type: 'uint256' },
       { internalType: 'uint256', name: '_maxComponents', type: 'uint256' },
@@ -361,6 +373,30 @@ export const APE_REBALANCE_EXT_ABI = [
   },
   {
     inputs: [],
+    name: 'getRebalancePrices',
+    outputs: [
+      { internalType: 'address[]', name: 'components', type: 'address[]' },
+      { internalType: 'uint256[]', name: 'prices', type: 'uint256[]' },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'getSetValue',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'address', name: '_voter', type: 'address' }],
+    name: 'getVotes',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'getWeights',
     outputs: [
       { internalType: 'address[]', name: '', type: 'address[]' },
@@ -377,7 +413,14 @@ export const APE_REBALANCE_EXT_ABI = [
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: '', type: 'address' }],
+    inputs: [{ internalType: 'address', name: '_token', type: 'address' }],
+    name: 'isTokenLiquid',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     name: 'lastEpochVoted',
     outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     stateMutability: 'view',
@@ -401,6 +444,13 @@ export const APE_REBALANCE_EXT_ABI = [
   },
   {
     inputs: [],
+    name: 'minWethLiquidity',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'owlNft',
     outputs: [{ internalType: 'contract OwlNFT', name: '', type: 'address' }],
     stateMutability: 'view',
@@ -410,6 +460,15 @@ export const APE_REBALANCE_EXT_ABI = [
     inputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     name: 'possibleComponents',
     outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'quickRouter',
+    outputs: [
+      { internalType: 'contract IUniswapV2Router', name: '', type: 'address' },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
@@ -451,6 +510,13 @@ export const APE_REBALANCE_EXT_ABI = [
     type: 'function',
   },
   {
+    inputs: [{ internalType: 'uint256', name: '_newMin', type: 'uint256' }],
+    name: 'setMinWethLiquidity',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
     inputs: [
       {
         internalType: 'uint256',
@@ -467,7 +533,7 @@ export const APE_REBALANCE_EXT_ABI = [
     inputs: [],
     name: 'setToken',
     outputs: [
-      { internalType: 'contract ISetToken', name: '', type: 'address' },
+      { internalType: 'contract ISetToken_1', name: '', type: 'address' },
     ],
     stateMutability: 'view',
     type: 'function',
@@ -516,6 +582,15 @@ export const APE_REBALANCE_EXT_ABI = [
     name: 'startRebalanceWithUnits',
     outputs: [],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'sushiRouter',
+    outputs: [
+      { internalType: 'contract IUniswapV2Router', name: '', type: 'address' },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
   {
