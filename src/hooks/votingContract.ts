@@ -21,7 +21,7 @@ export const ethersGetVotes = async (
     console.log('badVoteGet', voteCount)
     return parseInt(formatEther(voteCount))
   } catch (err) {
-    toast.warn("You've already voted this epoch", {
+    toast.warn("you've already voted this epoch", {
       toastId: 'already-voted',
       autoClose: 4000,
     })
@@ -35,8 +35,12 @@ export const ethersGetMaxComponents = async (library: any): Promise<number> => {
     APE_REBALANCE_EXT_ABI,
     library
   )
-  const maxComponents: BigNumber = await votingContract.maxComponents()
-  return maxComponents.toNumber()
+  try {
+    const maxComponents: BigNumber = await votingContract.maxComponents()
+    return maxComponents.toNumber()
+  } catch (err) {
+    return 0
+  }
 }
 
 export const ethersVote = async (
@@ -44,10 +48,17 @@ export const ethersVote = async (
   components: string[],
   votes: BigNumber[]
 ) => {
-  const votingContract = await new Contract(
-    APE_REBALANCE_EXT_ADDRESS,
-    APE_REBALANCE_EXT_ABI,
-    library.getSigner()
-  )
-  await votingContract.vote(components, votes)
+  try {
+    const votingContract = await new Contract(
+      APE_REBALANCE_EXT_ADDRESS,
+      APE_REBALANCE_EXT_ABI,
+      library.getSigner()
+    )
+    await votingContract.vote(components, votes)
+  } catch (err) {
+    toast.warn('there was a problem submitting the vote', {
+      toastId: 'failed-to-vote',
+      autoClose: 4000,
+    })
+  }
 }

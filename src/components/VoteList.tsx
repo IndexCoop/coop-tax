@@ -1,4 +1,4 @@
-import { Button, Flex } from '@chakra-ui/react'
+import { Button, Flex, Text } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { BigNumber } from '@ethersproject/bignumber'
@@ -19,6 +19,7 @@ const VoteList = () => {
   const [maxComponents, setMaxComponents] = useState<number>(0)
   const [voteBalance, setVoteBalance] = useState<number>(0)
   const [votes, setVotes] = useState<TokenVote[]>([])
+  const [disableSubmit, setDisableSubmit] = useState<boolean>(true)
   const { account, library } = useEthers()
 
   useEffect(() => {
@@ -35,6 +36,7 @@ const VoteList = () => {
       })
     ethersGetVotes(account, library).then((val) => {
       setVoteBalance(val)
+      if (val === 0) setDisableSubmit(true)
     })
     ethersGetMaxComponents(library).then((val) => {
       setMaxComponents(val)
@@ -43,6 +45,7 @@ const VoteList = () => {
 
   const handleOnSelect = (item: TokenData) => {
     if (selectedTokens.length < maxComponents) {
+      setDisableSubmit(false)
       if (selectedTokens.indexOf(item) === -1) {
         let newSelected = selectedTokens.concat(item)
         setSelectedTokens(newSelected)
@@ -63,6 +66,7 @@ const VoteList = () => {
     )
     setSelectedTokens(remainingSelected)
     setVotes(remainingVotes)
+    if (remainingSelected.length === 0) setDisableSubmit(true)
   }
 
   const handleOnVote = (address: string, tokenVotes: number) => {
@@ -91,7 +95,12 @@ const VoteList = () => {
     const finalVotes = votes.map((vote) => BigNumber.from(vote.votes))
     const voteTally = totalVotes(finalVotes)
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    if (voteTally <= voteBalance) ethersVote(library, addresses, finalVotes)
+    if (addresses.length === 0 || finalVotes.length === 0)
+      toast.error(`you must select tokens to vote on before submitting`, {
+        autoClose: 4000,
+      })
+    else if (voteTally <= voteBalance && !disableSubmit)
+      ethersVote(library, addresses, finalVotes)
     else
       toast.error(
         `you only have ${voteBalance} hoots to give, but you tried to give ${voteTally}`,
@@ -99,6 +108,7 @@ const VoteList = () => {
           autoClose: 4000,
         }
       )
+    setDisableSubmit(true)
     console.log('hoot given', addresses, finalVotes)
   }
 
@@ -114,6 +124,9 @@ const VoteList = () => {
         }}
         className='token-select'
       />
+      <Text mb='10px'>
+        selected {selectedTokens.length}/{maxComponents} tokens
+      </Text>
       <SelectedTokens
         selectedTokens={selectedTokens}
         handleOnVote={handleOnVote}
@@ -123,6 +136,7 @@ const VoteList = () => {
         width='150px'
         colorScheme='telegram'
         variant='solid'
+        disabled={disableSubmit}
         onClick={handleOnSubmit}
       >
         give a hoot

@@ -33,39 +33,33 @@ const SelectedTokens = (props: {
 
   return (
     <Box width='265px' marginBottom='13px'>
-      {props.selectedTokens.length > 0 ? (
-        props.selectedTokens.map((token) => (
-          <Flex
-            flexDirection='row'
-            alignItems='center'
-            width='265px'
-            justifyContent='flex-end'
-            bg='gray.700'
-            borderRadius='5px'
-            padding='5px'
-            marginBottom='10px'
-          >
-            <Text marginLeft='3px' flexGrow={99}>
-              ${token.symbol}
-            </Text>{' '}
-            <Box paddingRight='10px'>
-              <VoteCounter
-                token={token}
-                voteBalance={voteBalance}
-                handleOnVote={props.handleOnVote}
-              />
-            </Box>
-            <RemoveTokenButton
+      {props.selectedTokens.map((token) => (
+        <Flex
+          flexDirection='row'
+          alignItems='center'
+          width='265px'
+          justifyContent='flex-end'
+          bg='gray.700'
+          borderRadius='5px'
+          padding='5px'
+          marginBottom='10px'
+        >
+          <Text marginLeft='3px' flexGrow={99}>
+            ${token.symbol}
+          </Text>{' '}
+          <Box paddingRight='10px'>
+            <VoteCounter
               token={token}
-              handleOnRemoveToken={props.handleOnRemoveToken}
+              voteBalance={voteBalance}
+              handleOnVote={props.handleOnVote}
             />
-          </Flex>
-        ))
-      ) : (
-        <Box width='' textAlign='center'>
-          no selected tokens
-        </Box>
-      )}
+          </Box>
+          <RemoveTokenButton
+            token={token}
+            handleOnRemoveToken={props.handleOnRemoveToken}
+          />
+        </Flex>
+      ))}
     </Box>
   )
 }
@@ -98,8 +92,8 @@ const VoteCounter = (props: {
 
   return (
     <NumberInput
-      defaultValue={1}
-      min={1}
+      defaultValue={0}
+      min={0}
       max={props.voteBalance}
       width='80px'
       onChange={vote}
