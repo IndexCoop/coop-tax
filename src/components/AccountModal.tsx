@@ -40,7 +40,7 @@ export default function AccountModal({ isOpen, onClose }: Props) {
         borderRadius='3xl'
       >
         <ModalHeader color='white' px={4} fontSize='lg' fontWeight='medium'>
-          Account
+          account
         </ModalHeader>
         <ModalCloseButton
           color='white'
@@ -62,7 +62,7 @@ export default function AccountModal({ isOpen, onClose }: Props) {
           >
             <Flex justifyContent='space-between' alignItems='center' mb={3}>
               <Text color='gray.400' fontSize='sm'>
-                Connected with MetaMask
+                connected with metamask
               </Text>
               <Button
                 variant='outline'
@@ -81,7 +81,7 @@ export default function AccountModal({ isOpen, onClose }: Props) {
                 }}
                 onClick={handleDeactivateAccount}
               >
-                Disconnect
+                disconnect
               </Button>
             </Flex>
             <Flex alignItems='center' mt={2} mb={4} lineHeight={1}>
@@ -112,7 +112,7 @@ export default function AccountModal({ isOpen, onClose }: Props) {
                 }}
               >
                 <CopyIcon mr={1} />
-                Copy Address
+                copy address
               </Button>
               <Link
                 fontSize='sm'
@@ -128,7 +128,7 @@ export default function AccountModal({ isOpen, onClose }: Props) {
                 }}
               >
                 <ExternalLinkIcon mr={1} />
-                View on Explorer
+                view on explorer
               </Link>
             </Flex>
           </Box>
@@ -147,7 +147,7 @@ export default function AccountModal({ isOpen, onClose }: Props) {
             fontWeight='medium'
             fontSize='md'
           >
-            Your transactions willl appear here...
+            your transactions will appear here...
           </Text>
         </ModalFooter>
       </ModalContent>

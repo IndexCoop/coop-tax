@@ -15,7 +15,38 @@
 }
 
 .token-select {
-  width: 18vw;
+  width: 265px;
   color: black;
   margin: 15px 0;
+}
+
+/* React Toastify */
+div > .Toastify__toast {
+  color: black;
+  border-radius: 8px;
+}
+
+div > .Toastify__toast-body {
+  margin-left: 20px;
+}
+
+div > .Toastify__toast--success {
+  background: #ffffff;
+  color: #1d144f;
+}
+
+div > .Toastify__progress-bar--success {
+  background: #2bb160;
+}
+
+div > .Toastify__toast--info {
+  border-top: 5px solid #2d2ce5;
+}
+
+div > .Toastify__toast--warning {
+  border-top: 5px solid #f3b731;
+}
+
+div > .Toastify__toast--error {
+  background-color: rgb(162, 33, 20);
 }

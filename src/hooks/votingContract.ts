@@ -1,28 +1,53 @@
-import { useContractCall } from '@usedapp/core'
-import { BigNumber, utils } from 'ethers'
+import { formatEther } from '@ethersproject/units'
+import { BigNumber, Contract } from 'ethers'
+import { toast } from 'react-toastify'
 import {
   APE_REBALANCE_EXT_ABI,
   APE_REBALANCE_EXT_ADDRESS,
 } from 'utils/constants'
 
-export const useMaxComponents = (): number => {
-  const [maxComponents] =
-    useContractCall({
-      abi: new utils.Interface(APE_REBALANCE_EXT_ABI),
-      address: APE_REBALANCE_EXT_ADDRESS,
-      method: 'maxComponents',
-      args: [],
-    }) ?? []
-  return maxComponents ? maxComponents.toNumber() : 0
+export const ethersGetVotes = async (
+  address: string | null | undefined,
+  library: any
+): Promise<number> => {
+  const votingContract = await new Contract(
+    APE_REBALANCE_EXT_ADDRESS,
+    APE_REBALANCE_EXT_ABI,
+    library
+  )
+  try {
+    console.log('beforeVoteCoubt')
+    const voteCount: any = await votingContract.getVotes(address)
+    console.log('badVoteGet', voteCount)
+    return parseInt(formatEther(voteCount))
+  } catch (err) {
+    toast.warn("You've already voted this epoch", {
+      toastId: 'already-voted',
+      autoClose: 4000,
+    })
+    return 0
+  }
 }
 
-export const useVote = (components: string[], votes: BigNumber[]) => {
-  const [vote] =
-    useContractCall({
-      abi: new utils.Interface(APE_REBALANCE_EXT_ABI),
-      address: APE_REBALANCE_EXT_ADDRESS,
-      method: 'vote',
-      args: [components, votes],
-    }) ?? []
-  return vote
+export const ethersGetMaxComponents = async (library: any): Promise<number> => {
+  const votingContract = await new Contract(
+    APE_REBALANCE_EXT_ADDRESS,
+    APE_REBALANCE_EXT_ABI,
+    library
+  )
+  const maxComponents: BigNumber = await votingContract.maxComponents()
+  return maxComponents.toNumber()
+}
+
+export const ethersVote = async (
+  library: any,
+  components: string[],
+  votes: BigNumber[]
+) => {
+  const votingContract = await new Contract(
+    APE_REBALANCE_EXT_ADDRESS,
+    APE_REBALANCE_EXT_ABI,
+    library.getSigner()
+  )
+  await votingContract.vote(components, votes)
 }

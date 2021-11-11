@@ -1,6 +1,8 @@
 import 'App.css'
 import { ChakraProvider, useDisclosure } from '@chakra-ui/react'
 import { useEthers } from '@usedapp/core'
+import { Slide, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 import Layout from 'components/Layout'
 import ConnectButton from 'components/ConnectButton'
@@ -16,6 +18,7 @@ function App() {
         <ConnectButton handleOpenModal={onOpen} />
         <AccountModal isOpen={isOpen} onClose={onClose} />
         {account && <VoteList />}
+        <ToastContainer transition={Slide} position='top-left' />
       </Layout>
     </ChakraProvider>
   )

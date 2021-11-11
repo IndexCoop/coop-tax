@@ -1,19 +1,25 @@
-import { Box, Button, Flex } from '@chakra-ui/react'
-import { useEffect, useRef, useState } from 'react'
+import { Button, Flex } from '@chakra-ui/react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
-import {} from '@chakra-ui/react'
-
-import { useMaxComponents, useVote } from 'hooks/votingContract'
-import SelectedTokens from './SelectedTokens'
 import { BigNumber } from '@ethersproject/bignumber'
 import Select, { createFilter } from 'react-select'
+import { toast } from 'react-toastify'
 import { useEthers } from '@usedapp/core'
+
+import {
+  ethersGetVotes,
+  ethersGetMaxComponents,
+  ethersVote,
+} from 'hooks/votingContract'
+import SelectedTokens from './SelectedTokens'
 
 const VoteList = () => {
   const [tokenOptions, setTokenOptions] = useState<TokenOption[]>([])
   const [selectedTokens, setSelectedTokens] = useState<TokenData[]>([])
+  const [maxComponents, setMaxComponents] = useState<number>(0)
+  const [voteBalance, setVoteBalance] = useState<number>(0)
   const [votes, setVotes] = useState<TokenVote[]>([])
-  const maxComponents = useMaxComponents()
+  const { account, library } = useEthers()
 
   useEffect(() => {
     axios
@@ -21,26 +27,30 @@ const VoteList = () => {
         'https://unpkg.com/quickswap-default-token-list@1.2.4/build/quickswap-default.tokenlist.json'
       )
       .then((response) => {
-        console.log('Token Response', response.data.tokens)
         setTokenOptions(
           response.data.tokens.map((token: TokenData) => {
             return { value: token.address, label: token.symbol, token: token }
           })
         )
       })
-  }, [])
+    ethersGetVotes(account, library).then((val) => {
+      setVoteBalance(val)
+    })
+    ethersGetMaxComponents(library).then((val) => {
+      setMaxComponents(val)
+    })
+  }, [account, library, maxComponents, voteBalance])
 
   const handleOnSelect = (item: TokenData) => {
     if (selectedTokens.length < maxComponents) {
-      console.log(
-        'length < maxComponents',
-        selectedTokens.length,
-        maxComponents
-      )
-      let newSelected = selectedTokens.concat(item)
-      console.log('newSelected', newSelected)
-      setSelectedTokens(newSelected)
-      console.log('selected', item, selectedTokens)
+      if (selectedTokens.indexOf(item) === -1) {
+        let newSelected = selectedTokens.concat(item)
+        setSelectedTokens(newSelected)
+      }
+    } else {
+      toast.warn(`cannot have more than ${maxComponents} tokens selected`, {
+        autoClose: 4000,
+      })
     }
   }
 
@@ -53,21 +63,43 @@ const VoteList = () => {
     )
     setSelectedTokens(remainingSelected)
     setVotes(remainingVotes)
-    console.log('removed', removedToken, remainingVotes, remainingSelected)
   }
 
   const handleOnVote = (address: string, tokenVotes: number) => {
-    const vote: TokenVote = { address: address, votes: tokenVotes }
-    setVotes(votes.concat(vote))
-    console.log('voted', vote, votes)
+    const newVote: TokenVote = { address: address, votes: tokenVotes }
+    const existingVote = votes.filter((vote) => {
+      return vote.address === address
+    })
+    if (existingVote.length > 0) {
+      const voteIndex = votes.indexOf(existingVote[0])
+      let updateVotes = votes
+      updateVotes[voteIndex] = newVote
+      setVotes(updateVotes)
+    } else {
+      setVotes(votes.concat(newVote))
+    }
+  }
+
+  const totalVotes = (finalVotes: BigNumber[]) => {
+    return finalVotes
+      .reduce((tally: BigNumber, votes: BigNumber) => tally.add(votes))
+      .toNumber()
   }
 
   const handleOnSubmit = () => {
     const addresses = votes.map((vote) => vote.address)
     const finalVotes = votes.map((vote) => BigNumber.from(vote.votes))
+    const voteTally = totalVotes(finalVotes)
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    useVote(addresses, finalVotes)
-    console.log('voted', addresses, finalVotes)
+    if (voteTally <= voteBalance) ethersVote(library, addresses, finalVotes)
+    else
+      toast.error(
+        `you only have ${voteBalance} hoots to give, but you tried to give ${voteTally}`,
+        {
+          autoClose: 4000,
+        }
+      )
+    console.log('hoot given', addresses, finalVotes)
   }
 
   return (
@@ -88,12 +120,12 @@ const VoteList = () => {
         handleOnRemoveToken={handleOnRemoveToken}
       />
       <Button
-        width='20vw'
+        width='150px'
         colorScheme='telegram'
         variant='solid'
         onClick={handleOnSubmit}
       >
-        Give a Hoot
+        give a hoot
       </Button>
     </Flex>
   )

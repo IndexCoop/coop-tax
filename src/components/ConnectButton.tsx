@@ -1,8 +1,9 @@
 import { Button, Box, Text } from '@chakra-ui/react'
 import { ChainId, useEthers } from '@usedapp/core'
+import { useState, useEffect } from 'react'
 import Identicon from './Identicon'
 
-import { useGetVotes } from 'hooks/nftContract'
+import { ethersGetVotes } from 'hooks/votingContract'
 
 const ConnectButton = (props: { handleOpenModal: any }) => {
   const { account, activateBrowserWallet } = useEthers()
@@ -46,8 +47,15 @@ const ConnectButton = (props: { handleOpenModal: any }) => {
 export default ConnectButton
 
 const ConnectToMatic = (props: { handleOpenModal: any }) => {
-  const { chainId, account } = useEthers()
-  const voteBalance = useGetVotes(account)
+  const [voteBalance, setVoteBalance] = useState<number>(0)
+  const { chainId, account, library } = useEthers()
+
+  useEffect(() => {
+    if (account && library)
+      ethersGetVotes(account, library).then((val) => {
+        setVoteBalance(val)
+      })
+  }, [account, library])
 
   return chainId && chainId === ChainId.Polygon ? (
     <Box
@@ -59,7 +67,7 @@ const ConnectToMatic = (props: { handleOpenModal: any }) => {
     >
       <Box px='3'>
         <Text color='white' fontSize='md'>
-          {voteBalance && voteBalance} Hoots
+          {voteBalance && voteBalance} hoots
         </Text>
       </Box>
       <Button

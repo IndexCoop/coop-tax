@@ -10,41 +10,51 @@ import {
   Text,
 } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
-import { TokenData } from 'providers/Token'
 import { CloseIcon } from '@chakra-ui/icons'
-import { useEthers, useTokenBalance } from '@usedapp/core'
-import { OWL_NFT_ADDRESS } from 'utils/constants'
-import { useGetVotes } from 'hooks/nftContract'
+import { useEthers } from '@usedapp/core'
+
+import { TokenData } from './VoteList'
+import { ethersGetVotes } from 'hooks/votingContract'
 
 const SelectedTokens = (props: {
   selectedTokens: TokenData[]
   handleOnRemoveToken(token: TokenData): void
   handleOnVote(address: string, vote: number): void
 }) => {
-  const [remainingVotes, setRemainingVotes] = useState<number>(0)
-  const { chainId, account } = useEthers()
-  const nftBalance = useTokenBalance(OWL_NFT_ADDRESS, account)
-  setRemainingVotes(
-    useGetVotes(account ? account : '', nftBalance ? nftBalance.toNumber() : 0)
-  )
-  useEffect(() => {}, [])
-  console.log('SelectedTokens', props.selectedTokens)
+  const [voteBalance, setVoteBalance] = useState<number>(0)
+  const { account, library } = useEthers()
+
+  useEffect(() => {
+    if (account && library)
+      ethersGetVotes(account, library).then((val) => {
+        setVoteBalance(val)
+      })
+  }, [account, library])
 
   return (
-    <Box width='35vw' marginBottom='10px'>
+    <Box width='265px' marginBottom='13px'>
       {props.selectedTokens.length > 0 ? (
         props.selectedTokens.map((token) => (
           <Flex
             flexDirection='row'
             alignItems='center'
-            width='35vw'
-            justifyContent='space-between'
+            width='265px'
+            justifyContent='flex-end'
             bg='gray.700'
             borderRadius='5px'
             padding='5px'
+            marginBottom='10px'
           >
-            <Text marginLeft='3px'>${token.symbol}</Text>{' '}
-            <Text> Voting here</Text>
+            <Text marginLeft='3px' flexGrow={99}>
+              ${token.symbol}
+            </Text>{' '}
+            <Box paddingRight='10px'>
+              <VoteCounter
+                token={token}
+                voteBalance={voteBalance}
+                handleOnVote={props.handleOnVote}
+              />
+            </Box>
             <RemoveTokenButton
               token={token}
               handleOnRemoveToken={props.handleOnRemoveToken}
@@ -52,8 +62,8 @@ const SelectedTokens = (props: {
           </Flex>
         ))
       ) : (
-        <Box width='35vw' textAlign='center'>
-          No Selected Tokens
+        <Box width='' textAlign='center'>
+          no selected tokens
         </Box>
       )}
     </Box>
@@ -78,10 +88,22 @@ const RemoveTokenButton = (props: {
 
 const VoteCounter = (props: {
   token: TokenData
+  voteBalance: number
   handleOnVote(address: string, vote: number): void
 }) => {
+  const vote = (vote: string) => {
+    const voteInt = parseInt(vote)
+    props.handleOnVote(props.token.address, voteInt)
+  }
+
   return (
-    <NumberInput defaultValue={15} min={10} max={20}>
+    <NumberInput
+      defaultValue={1}
+      min={1}
+      max={props.voteBalance}
+      width='80px'
+      onChange={vote}
+    >
       <NumberInputField />
       <NumberInputStepper>
         <NumberIncrementStepper />
