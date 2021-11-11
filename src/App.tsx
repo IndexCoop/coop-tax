@@ -27,7 +27,7 @@ function App() {
         <ConnectButton handleOpenModal={onOpen} />
         <AccountModal isOpen={isOpen} onClose={onClose} />
         {account && <VoteList />}
-        <ToastContainer transition={Slide} position='top-left' />
+        <ToastContainer transition={Slide} position='bottom-left' />
       </Layout>
     </ChakraProvider>
   )
