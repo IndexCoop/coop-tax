@@ -51,7 +51,7 @@ const Warning = () => {
       <Image
         boxSize='50px'
         src='https://emojipedia-us.s3.amazonaws.com/source/skype/289/monkey_1f412.png'
-        mr='20px'
+        ml='20px'
       />
       <Text fontSize='xl'>
         <Text color='red' fontWeight='bold'>
@@ -62,7 +62,7 @@ const Warning = () => {
       <Image
         boxSize='50px'
         src='https://emojipedia-us.s3.amazonaws.com/source/skype/289/monkey_1f412.png'
-        ml='20px'
+        mr='20px'
       />
     </Flex>
   )
