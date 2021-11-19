@@ -15,6 +15,7 @@ import Layout from 'components/Layout'
 import ConnectButton from 'components/ConnectButton'
 import AccountModal from 'components/AccountModal'
 import VoteList from 'components/VoteList'
+import TokenPurchase from 'components/TokenPurchase'
 
 function App() {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -26,7 +27,7 @@ function App() {
         <Heading m='20px 0'>coop.tax</Heading>
         <ConnectButton handleOpenModal={onOpen} />
         <AccountModal isOpen={isOpen} onClose={onClose} />
-        {account && <VoteList />}
+        {account && <AppContent />}
         <ToastContainer transition={Slide} position='bottom-left' />
       </Layout>
     </ChakraProvider>
@@ -64,6 +65,15 @@ const Warning = () => {
         src='https://emojipedia-us.s3.amazonaws.com/source/skype/289/monkey_1f412.png'
         mr='20px'
       />
+    </Flex>
+  )
+}
+
+const AppContent = () => {
+  return (
+    <Flex flexDir='row' justifyContent='space-evenly' w='100vw' mt='30px'>
+      <TokenPurchase />
+      <VoteList />
     </Flex>
   )
 }

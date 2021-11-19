@@ -1,10 +1,19 @@
-import { Button, Flex, Text } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { BigNumber } from '@ethersproject/bignumber'
 import Select, { createFilter } from 'react-select'
 import { toast } from 'react-toastify'
 import { useEthers } from '@usedapp/core'
+import {
+  Button,
+  Flex,
+  Text,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+} from '@chakra-ui/react'
 
 import {
   ethersGetVotes,
@@ -14,17 +23,45 @@ import {
 import SelectedTokens from './SelectedTokens'
 
 const TokenPurchase = () => {
-  const [tokenOptions, setTokenOptions] = useState<TokenOption[]>([])
-  const [selectedTokens, setSelectedTokens] = useState<TokenData[]>([])
-  const [maxComponents, setMaxComponents] = useState<number>(0)
-  const [voteBalance, setVoteBalance] = useState<number>(0)
-  const [votes, setVotes] = useState<TokenVote[]>([])
-  const [disableSubmit, setDisableSubmit] = useState<boolean>(true)
+  const [tokenAmount, setTokenAmount] = useState<number>(0)
+  const [tokenPrice, setTokenPrice] = useState<number>(0)
+  const [ethAmount, setEthAmount] = useState<number>(0)
   const { account, library } = useEthers()
 
-  useEffect(() => {}, [])
+  useEffect(() => {
+    axios
+      .get(
+        'https://api.coingecko.com/api/v3/simple/price?ids=metaverse-index&vs_currencies=usd'
+      )
+      .then((response) => {
+        console.log('response', response.data['metaverse-index'].usd)
+        setTokenPrice(response.data['metaverse-index'].usd)
+      })
+  }, [])
 
-  return <Flex flexDirection='column' alignItems='center'></Flex>
+  return (
+    <Flex flexDirection='column' alignItems='center'>
+      <Text alignSelf='flex-start' fontWeight='bold'>
+        HOOT Index
+      </Text>
+      <Text alignSelf='flex-start'>${tokenPrice}</Text>
+      <Flex flexDir='row' alignItems='center' mt='15px'>
+        <NumberInput
+          size='lg'
+          maxW={32}
+          defaultValue={0}
+          min={0}
+          precision={2}
+          onChange={(valueAsString: string, valueAsNumber: number) =>
+            setTokenAmount(valueAsNumber)
+          }
+        >
+          <NumberInputField />
+        </NumberInput>
+        <Text ml='5px'>$HOOT</Text>
+      </Flex>
+    </Flex>
+  )
 }
 
 export default TokenPurchase
