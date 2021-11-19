@@ -3,7 +3,7 @@ import { ChainId, useEthers } from '@usedapp/core'
 import { useState, useEffect } from 'react'
 import Identicon from './Identicon'
 
-import { ethersGetVotes } from 'hooks/votingContract'
+import { ethersGetVotes } from 'apis/votingContract'
 
 const ConnectButton = (props: { handleOpenModal: any }) => {
   const { account, activateBrowserWallet } = useEthers()

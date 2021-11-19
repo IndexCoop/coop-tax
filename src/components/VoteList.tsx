@@ -10,7 +10,7 @@ import {
   ethersGetVotes,
   ethersGetMaxComponents,
   ethersVote,
-} from 'hooks/votingContract'
+} from 'apis/votingContract'
 import SelectedTokens from './SelectedTokens'
 
 const VoteList = () => {
