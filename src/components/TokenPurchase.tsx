@@ -24,18 +24,19 @@ import SelectedTokens from './SelectedTokens'
 
 const TokenPurchase = () => {
   const [tokenAmount, setTokenAmount] = useState<number>(0)
-  const [tokenPrice, setTokenPrice] = useState<number>(0)
+  const [tokenPriceUSD, setTokenPriceUSD] = useState<number>(0)
+  const [tokenPriceETH, setTokenPriceETH] = useState<number>(0)
   const [ethAmount, setEthAmount] = useState<number>(0)
   const { account, library } = useEthers()
 
   useEffect(() => {
     axios
       .get(
-        'https://api.coingecko.com/api/v3/simple/price?ids=metaverse-index&vs_currencies=usd'
+        'https://api.coingecko.com/api/v3/simple/price?ids=metaverse-index&vs_currencies=usd%2Ceth'
       )
       .then((response) => {
-        console.log('response', response.data['metaverse-index'].usd)
-        setTokenPrice(response.data['metaverse-index'].usd)
+        setTokenPriceUSD(response.data['metaverse-index'].usd)
+        setTokenPriceETH(response.data['metaverse-index'].eth)
       })
   }, [])
 
@@ -44,7 +45,9 @@ const TokenPurchase = () => {
       <Text alignSelf='flex-start' fontWeight='bold'>
         HOOT Index
       </Text>
-      <Text alignSelf='flex-start'>${tokenPrice}</Text>
+      <Text alignSelf='flex-start'>
+        ${tokenPriceUSD} / {tokenPriceETH} ETH
+      </Text>
       <Flex flexDir='row' alignItems='center' mt='15px'>
         <NumberInput
           size='lg'

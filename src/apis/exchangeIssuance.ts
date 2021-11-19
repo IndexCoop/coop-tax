@@ -22,3 +22,10 @@ export const ethersCheckTokenApproval = async (
 
   return 0
 }
+
+export const ethersIssueFromWeth = async (
+  address: string | null | undefined,
+  library: any
+): Promise<string> => {
+  return ''
+}
