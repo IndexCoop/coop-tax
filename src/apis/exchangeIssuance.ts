@@ -1,31 +1,27 @@
-import { Provider } from '@ethersproject/abstract-provider'
-import { formatEther } from '@ethersproject/units'
-import { BigNumber, Contract, Signer } from 'ethers'
+import { BigNumber } from 'ethers'
 import { toast } from 'react-toastify'
 import { getExchangeIssuanceContract } from 'utils'
-import {
-  POLYGON_EXCHANGE_ISSUANCE,
-  POLYGON_EXCHANGE_ISSUANCE_ABI,
-} from 'utils/constants'
-
-/**
- * checks for token approvals
- * @param address
- * @param library
- * @returns
- */
-export const ethersCheckTokenApproval = async (
-  address: string | null | undefined,
-  library: any
-): Promise<number> => {
-  const eiContract = await getExchangeIssuanceContract(library)
-
-  return 0
-}
+import { HOOT_SET_TOKEN_ADDRESS, WETH_ADDRESS } from 'utils/constants'
 
 export const ethersIssueFromWeth = async (
-  address: string | null | undefined,
-  library: any
+  library: any,
+  tokenAmount: BigNumber,
+  maxAmountInput: BigNumber
 ): Promise<string> => {
-  return ''
+  try {
+    const eiContract = await getExchangeIssuanceContract(library)
+    const issueSetTx = await eiContract.issueExactSetFromToken(
+      HOOT_SET_TOKEN_ADDRESS,
+      WETH_ADDRESS,
+      tokenAmount,
+      maxAmountInput
+    )
+    return issueSetTx
+  } catch (err) {
+    toast.warn('there was an issue with exchange issuance', {
+      toastId: 'couldnt-buy',
+      autoClose: 4000,
+    })
+    return 'idk'
+  }
 }

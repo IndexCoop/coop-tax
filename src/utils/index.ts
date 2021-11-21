@@ -44,3 +44,23 @@ export const getAllowance = async (
     return BigNumber.from(0)
   }
 }
+
+/**
+ * Converts a number to Wei to another denomination of Eth
+ * @param number
+ * @param power
+ * @returns
+ */
+export const toWei = (number: BigNumber, power: number = 18) => {
+  return number.mul(BigNumber.from(10).pow(power))
+}
+
+/**
+ * Converts a number from Wei to another denomination of Eth
+ * @param number
+ * @param power
+ * @returns
+ */
+export const fromWei = (number: BigNumber, power: number = 18) => {
+  return number.div(BigNumber.from(10).pow(power))
+}

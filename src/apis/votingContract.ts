@@ -16,9 +16,7 @@ export const ethersGetVotes = async (
     library
   )
   try {
-    console.log('beforeVoteCoubt')
     const voteCount: any = await votingContract.getVotes(address)
-    console.log('badVoteGet', voteCount)
     return parseInt(formatEther(voteCount))
   } catch (err) {
     toast.warn("you've already voted this epoch", {

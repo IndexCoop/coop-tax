@@ -7,7 +7,7 @@ import {
   Image,
   useDisclosure,
 } from '@chakra-ui/react'
-import { useEthers } from '@usedapp/core'
+import { ChainId, useEthers } from '@usedapp/core'
 import { Slide, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -19,7 +19,12 @@ import TokenPurchase from 'components/TokenPurchase'
 
 function App() {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { account } = useEthers()
+  const { account, chainId } = useEthers()
+
+  const showApp = () => {
+    return account && chainId === ChainId.Polygon
+  }
+
   return (
     <ChakraProvider>
       <Layout>
@@ -27,7 +32,7 @@ function App() {
         <Heading m='20px 0'>coop.tax</Heading>
         <ConnectButton handleOpenModal={onOpen} />
         <AccountModal isOpen={isOpen} onClose={onClose} />
-        {account && <AppContent />}
+        {showApp() && <AppContent />}
         <ToastContainer transition={Slide} position='bottom-left' />
       </Layout>
     </ChakraProvider>

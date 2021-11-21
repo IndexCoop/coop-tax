@@ -109,7 +109,6 @@ const VoteList = () => {
         }
       )
     setDisableSubmit(true)
-    console.log('hoot given', addresses, finalVotes)
   }
 
   return (

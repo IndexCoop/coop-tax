@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { BigNumber } from '@ethersproject/bignumber'
-import Select, { createFilter } from 'react-select'
-import { toast } from 'react-toastify'
 import { useEthers } from '@usedapp/core'
 import {
   Button,
@@ -10,59 +8,73 @@ import {
   Text,
   NumberInput,
   NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
 } from '@chakra-ui/react'
 
-import {
-  ethersGetVotes,
-  ethersGetMaxComponents,
-  ethersVote,
-} from 'apis/votingContract'
-import SelectedTokens from './SelectedTokens'
+import { ethersIssueFromWeth } from 'apis/exchangeIssuance'
+import { toWei } from 'utils'
 
 const TokenPurchase = () => {
-  const [tokenAmount, setTokenAmount] = useState<number>(0)
-  const [tokenPriceUSD, setTokenPriceUSD] = useState<number>(0)
-  const [tokenPriceETH, setTokenPriceETH] = useState<number>(0)
-  const [ethAmount, setEthAmount] = useState<number>(0)
+  const [tokenAmount, setTokenAmount] = useState<number>(1)
+  const [ethPriceUSD, setEthPriceUSD] = useState<number>(1)
   const { account, library } = useEthers()
 
   useEffect(() => {
     axios
       .get(
-        'https://api.coingecko.com/api/v3/simple/price?ids=metaverse-index&vs_currencies=usd%2Ceth'
+        'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd'
       )
       .then((response) => {
-        setTokenPriceUSD(response.data['metaverse-index'].usd)
-        setTokenPriceETH(response.data['metaverse-index'].eth)
+        setEthPriceUSD(response.data['ethereum'].usd)
       })
   }, [])
 
+  const mintTokens = async () => {
+    console.log(
+      'txparams',
+      account,
+      library,
+      tokenAmount,
+      toWei(BigNumber.from(1).div(Math.floor(ethPriceUSD)).add(1)).toString()
+    )
+    const tx = await ethersIssueFromWeth(
+      library,
+      toWei(BigNumber.from(tokenAmount)),
+      toWei(BigNumber.from(1).div(Math.ceil(ethPriceUSD)).add(1)) // effective max spend $1 ish
+    )
+    console.log('tx', tx)
+  }
+
+  const formatValue = (val: number) => {
+    return val ? Math.round(val) : 0
+  }
+
   return (
     <Flex flexDirection='column' alignItems='center'>
-      <Text alignSelf='flex-start' fontWeight='bold'>
-        HOOT Index
-      </Text>
-      <Text alignSelf='flex-start'>
-        ${tokenPriceUSD} / {tokenPriceETH} ETH
-      </Text>
-      <Flex flexDir='row' alignItems='center' mt='15px'>
-        <NumberInput
-          size='lg'
-          maxW={32}
-          defaultValue={0}
-          min={0}
-          precision={2}
-          onChange={(valueAsString: string, valueAsNumber: number) =>
-            setTokenAmount(valueAsNumber)
-          }
-        >
-          <NumberInputField />
-        </NumberInput>
-        <Text ml='5px'>$HOOT</Text>
-      </Flex>
+      <Text fontWeight='bold'>HOOT Index</Text>
+      <NumberInput
+        size='lg'
+        width='150px'
+        defaultValue={1}
+        min={1}
+        max={100}
+        mt='20px'
+        onChange={(valueAsString: string, valueAsNumber: number) =>
+          setTokenAmount(valueAsNumber)
+        }
+        value={formatValue(tokenAmount)}
+      >
+        <NumberInputField />
+      </NumberInput>
+
+      <Button
+        width='150px'
+        mt='20px'
+        colorScheme='telegram'
+        variant='solid'
+        onClick={mintTokens}
+      >
+        mint tokens
+      </Button>
     </Flex>
   )
 }

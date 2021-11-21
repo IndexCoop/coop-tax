@@ -11,6 +11,9 @@ export const POLYGON_EXCHANGE_ISSUANCE =
 export const WETH_ADDRESS =
   process.env.REACT_APP_WETH_ADDRESS ||
   '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619'
+export const HOOT_SET_TOKEN_ADDRESS =
+  process.env.REACT_APP_HOOT_SET_TOKEN_ADDRESS ||
+  '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619'
 
 /** ABIs */
 export const OWL_NFT_ABI = [
