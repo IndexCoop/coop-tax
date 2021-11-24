@@ -52,7 +52,7 @@ const TokenPurchase = () => {
       account,
       library,
       toWei(BigNumber.from(tokenAmount)).toString(),
-      toWei(BigNumber.from(tokenAmount).add(3)).toString()
+      toWei(BigNumber.from(tokenAmount).add(1)).toString()
     )
     const tx = await ethersIssueExactSetFromToken(
       library,
