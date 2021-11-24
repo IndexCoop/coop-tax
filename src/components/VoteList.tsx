@@ -123,6 +123,10 @@ const VoteList = () => {
   const votingEnabled = () => {
     return (
       <Flex flexDirection='column' alignItems='center'>
+        <Text fontSize='xs'>
+          use your hoots to vote on tokens to include in the next weekly
+          rebalance
+        </Text>
         <Select
           isSearchable
           name='color'

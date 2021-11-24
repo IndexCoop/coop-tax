@@ -10,15 +10,18 @@ import {
 } from '@chakra-ui/react'
 
 import {
-  ethersApproveDAI,
-  ethersDAIAllowance,
+  ethersApproveWETH,
   ethersIssueExactSetFromToken,
+  ethersWETHAllowance,
 } from 'apis/exchangeIssuance'
 import { toWei } from 'utils'
 import { toast } from 'react-toastify'
+import { ethers } from 'ethers'
+import axios from 'axios'
 
 const TokenPurchase = () => {
   const [tokenAmount, setTokenAmount] = useState<number>(1)
+  const [etherPrice, setEtherPrice] = useState<number>(1)
   const [approving, setApproving] = useState<boolean>(false)
   const [initialAllowanceChecked, setInitialAllowanceChecked] =
     useState<boolean>(false)
@@ -27,19 +30,27 @@ const TokenPurchase = () => {
 
   //makes initail check for allowance
   useEffect(() => {
+    axios
+      .get(
+        'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd'
+      )
+      .then((response) => {
+        setEtherPrice(response.data['ethereum'].usd)
+        console.log('response', etherPrice)
+      })
     if (!initialAllowanceChecked) {
-      ethersDAIAllowance(account, library).then((res) => {
+      ethersWETHAllowance(account, library).then((res) => {
         setAllowance(res)
       })
       setInitialAllowanceChecked(true)
     }
-  }, [account, allowance, initialAllowanceChecked, library])
+  }, [account, allowance, etherPrice, initialAllowanceChecked, library])
 
   //checks every 3s if allowance is set
   useEffect(() => {
     if (initialAllowanceChecked && allowance.eq(0)) {
       setTimeout(() => {
-        ethersDAIAllowance(account, library).then((res) => {
+        ethersWETHAllowance(account, library).then((res) => {
           setAllowance(res)
         })
       }, 3000)
@@ -47,17 +58,20 @@ const TokenPurchase = () => {
   }, [account, allowance, initialAllowanceChecked, library])
 
   const mintTokens = async () => {
+    const DOLLAR_WETH = (1 / Math.floor(etherPrice)).toFixed(10).toString()
     console.log(
       'txparams',
       account,
       library,
       toWei(BigNumber.from(tokenAmount)).toString(),
-      toWei(BigNumber.from(tokenAmount).add(1)).toString()
+      toWei(BigNumber.from(tokenAmount).add(1)).toString(),
+      DOLLAR_WETH,
+      ethers.utils.parseEther(DOLLAR_WETH).toString()
     )
     const tx = await ethersIssueExactSetFromToken(
       library,
       toWei(BigNumber.from(tokenAmount)),
-      toWei(BigNumber.from(tokenAmount).add(1)) // effective max spend 1 DAI
+      ethers.utils.parseEther(DOLLAR_WETH) //roughly $1 in WETH
     )
     if (tx && tx.type && tx.type === 0 && tx.hash) {
       const successMsg = 'https://polygonscan.com/tx/' + tx.hash
@@ -71,7 +85,7 @@ const TokenPurchase = () => {
 
   const approveTokens = async () => {
     setApproving(true)
-    ethersApproveDAI(library).then((res) => {
+    ethersApproveWETH(library).then((res) => {
       console.log('approval res', res)
     })
   }
@@ -95,7 +109,7 @@ const TokenPurchase = () => {
   }
 
   const ApproveButton = () => {
-    let buttonText = approving ? 'approving...' : 'approve DAI'
+    let buttonText = approving ? 'approving...' : 'approve WETH'
     return (
       <Button
         width='150px'
@@ -113,6 +127,7 @@ const TokenPurchase = () => {
   return (
     <Flex flexDirection='column' alignItems='center'>
       <Text fontWeight='bold'>HOOT index</Text>
+      <Text fontSize='xs'>1 HOOT ~= $1 WETH</Text>
       <NumberInput
         size='lg'
         width='150px'

@@ -2,9 +2,9 @@ import { BigNumber, ethers } from 'ethers'
 import { toast } from 'react-toastify'
 import { getERC20Contract, getExchangeIssuanceContract } from 'utils'
 import {
-  DAI_ADDRESS,
   HOOT_SET_TOKEN_ADDRESS,
   POLYGON_EXCHANGE_ISSUANCE,
+  WETH_ADDRESS,
 } from 'utils/constants'
 
 export const ethersIssueExactSetFromToken = async (
@@ -17,7 +17,7 @@ export const ethersIssueExactSetFromToken = async (
     const eiContract = await getExchangeIssuanceContract(library.getSigner())
     const issueSetTx = await eiContract.issueExactSetFromToken(
       HOOT_SET_TOKEN_ADDRESS,
-      DAI_ADDRESS,
+      WETH_ADDRESS,
       tokenAmount,
       maxAmountInput
     )
@@ -32,10 +32,13 @@ export const ethersIssueExactSetFromToken = async (
   }
 }
 
-export const ethersApproveDAI = async (library: any) => {
+export const ethersApproveWETH = async (library: any) => {
   try {
-    const daiContract = await getERC20Contract(library.getSigner(), DAI_ADDRESS)
-    const approvalSetTx = await daiContract.approve(
+    const wethContract = await getERC20Contract(
+      library.getSigner(),
+      WETH_ADDRESS
+    )
+    const approvalSetTx = await wethContract.approve(
       POLYGON_EXCHANGE_ISSUANCE,
       ethers.constants.MaxUint256
     )
@@ -50,13 +53,16 @@ export const ethersApproveDAI = async (library: any) => {
   }
 }
 
-export const ethersDAIAllowance = async (
+export const ethersWETHAllowance = async (
   account: any,
   library: any
 ): Promise<BigNumber> => {
   try {
-    const daiContract = await getERC20Contract(library.getSigner(), DAI_ADDRESS)
-    const allowance = await daiContract.allowance(
+    const wethContract = await getERC20Contract(
+      library.getSigner(),
+      WETH_ADDRESS
+    )
+    const allowance = await wethContract.allowance(
       account,
       POLYGON_EXCHANGE_ISSUANCE
     )
@@ -68,29 +74,5 @@ export const ethersDAIAllowance = async (
     })
     console.log('error', err)
     return BigNumber.from(0)
-  }
-}
-
-export const ethersIssueSetForExactToken = async (
-  library: any,
-  tokenAmount: BigNumber,
-  maxAmountInput: BigNumber
-): Promise<string> => {
-  try {
-    const eiContract = await getExchangeIssuanceContract(library.getSigner())
-    const issueSetTx = await eiContract.issueSetForExactToken(
-      HOOT_SET_TOKEN_ADDRESS,
-      DAI_ADDRESS,
-      tokenAmount,
-      maxAmountInput
-    )
-    return issueSetTx
-  } catch (err) {
-    toast.warn('there was an issue with exchange issuance', {
-      toastId: 'couldnt-buy',
-      autoClose: 4000,
-    })
-    console.log('error', err)
-    return 'idk'
   }
 }
