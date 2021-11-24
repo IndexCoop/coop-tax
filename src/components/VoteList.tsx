@@ -13,6 +13,7 @@ import {
   ethersIsTokenLiquid,
 } from 'apis/votingContract'
 import SelectedTokens from './SelectedTokens'
+import { toWei } from 'utils'
 
 const VoteList = () => {
   const [tokenOptions, setTokenOptions] = useState<TokenOption[]>([])
@@ -101,7 +102,7 @@ const VoteList = () => {
 
   const handleOnSubmit = () => {
     const addresses = votes.map((vote) => vote.address)
-    const finalVotes = votes.map((vote) => BigNumber.from(vote.votes))
+    const finalVotes = votes.map((vote) => toWei(BigNumber.from(vote.votes)))
     const voteTally = totalVotes(finalVotes)
     // eslint-disable-next-line react-hooks/rules-of-hooks
     if (addresses.length === 0 || finalVotes.length === 0)
