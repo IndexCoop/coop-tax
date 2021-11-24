@@ -109,7 +109,10 @@ const VoteList = () => {
       toast.error(`you must select tokens to vote on before submitting`, {
         autoClose: 4000,
       })
-    else if (voteTally.lte(voteBalance) && !disableSubmit)
+    else if (
+      voteTally.lte(toWei(BigNumber.from(voteBalance))) &&
+      !disableSubmit
+    )
       ethersVote(library, addresses, finalVotes)
     else
       toast.error(
