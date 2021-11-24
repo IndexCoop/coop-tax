@@ -53,6 +53,7 @@ const Warning = () => {
       direction='row'
       justifyContent='space-between'
       alignItems='center'
+      mt='20px'
     >
       <Image
         boxSize='50px'

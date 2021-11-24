@@ -7,13 +7,7 @@ type Props = {
 
 export default function Layout({ children }: Props) {
   return (
-    <Flex
-      flexDirection='column'
-      alignItems='center'
-      margin='20px'
-      h='100vh'
-      bg='gray.800'
-    >
+    <Flex flexDirection='column' alignItems='center' h='100vh' bg='gray.800'>
       {children}
     </Flex>
   )
