@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 import { BigNumber } from '@ethersproject/bignumber'
 import { useEthers } from '@usedapp/core'
 import {
@@ -13,11 +12,10 @@ import {
 import {
   ethersApproveDAI,
   ethersDAIAllowance,
-  ethersIssueFromWeth,
-  ethersIssueSetForExactToken,
+  ethersIssueExactSetFromToken,
 } from 'apis/exchangeIssuance'
 import { toWei } from 'utils'
-import { ethers } from 'ethers'
+import { toast } from 'react-toastify'
 
 const TokenPurchase = () => {
   const [tokenAmount, setTokenAmount] = useState<number>(1)
@@ -53,14 +51,21 @@ const TokenPurchase = () => {
       'txparams',
       account,
       library,
-      tokenAmount,
-      toWei(BigNumber.from(1)).toString()
+      toWei(BigNumber.from(tokenAmount)).toString(),
+      toWei(BigNumber.from(tokenAmount).add(3)).toString()
     )
-    const tx = await ethersIssueSetForExactToken(
+    const tx = await ethersIssueExactSetFromToken(
       library,
-      BigNumber.from(tokenAmount),
-      BigNumber.from(1) // effective max spend 1 DAI
+      toWei(BigNumber.from(tokenAmount)),
+      toWei(BigNumber.from(tokenAmount).add(1)) // effective max spend 1 DAI
     )
+    if (tx && tx.type && tx.type === 0 && tx.hash) {
+      const successMsg = 'https://polygonscan.com/tx/' + tx.hash
+      toast.success(successMsg, {
+        toastId: 'mint-tx',
+        autoClose: 10000,
+      })
+    }
     console.log('tx', tx)
   }
 

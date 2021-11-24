@@ -7,11 +7,12 @@ import {
   POLYGON_EXCHANGE_ISSUANCE,
 } from 'utils/constants'
 
-export const ethersIssueFromWeth = async (
+export const ethersIssueExactSetFromToken = async (
   library: any,
   tokenAmount: BigNumber,
   maxAmountInput: BigNumber
-): Promise<string> => {
+): Promise<any> => {
+  console.log('exactSetFromToken')
   try {
     const eiContract = await getExchangeIssuanceContract(library.getSigner())
     const issueSetTx = await eiContract.issueExactSetFromToken(
