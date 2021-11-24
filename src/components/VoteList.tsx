@@ -13,7 +13,7 @@ import {
   ethersIsTokenLiquid,
 } from 'apis/votingContract'
 import SelectedTokens from './SelectedTokens'
-import { toWei } from 'utils'
+import { fromWei, toWei } from 'utils'
 
 const VoteList = () => {
   const [tokenOptions, setTokenOptions] = useState<TokenOption[]>([])
@@ -95,9 +95,9 @@ const VoteList = () => {
   }
 
   const totalVotes = (finalVotes: BigNumber[]) => {
-    return finalVotes
-      .reduce((tally: BigNumber, votes: BigNumber) => tally.add(votes))
-      .toNumber()
+    return finalVotes.reduce((tally: BigNumber, votes: BigNumber) =>
+      tally.add(votes)
+    )
   }
 
   const handleOnSubmit = () => {
@@ -109,11 +109,13 @@ const VoteList = () => {
       toast.error(`you must select tokens to vote on before submitting`, {
         autoClose: 4000,
       })
-    else if (voteTally <= voteBalance && !disableSubmit)
+    else if (voteTally.lte(voteBalance) && !disableSubmit)
       ethersVote(library, addresses, finalVotes)
     else
       toast.error(
-        `you only have ${voteBalance} hoots to give, but you tried to give ${voteTally}`,
+        `you only have ${voteBalance} hoots to give, but you tried to give ${fromWei(
+          voteTally
+        ).toString()}`,
         {
           autoClose: 4000,
         }
@@ -125,7 +127,7 @@ const VoteList = () => {
     return (
       <Flex flexDirection='column' alignItems='center'>
         <Text fontSize='xs'>
-          use your hoots to vote on tokens to include in the next weekly
+          use your votes to vote on tokens to include in the next weekly
           rebalance
         </Text>
         <Select

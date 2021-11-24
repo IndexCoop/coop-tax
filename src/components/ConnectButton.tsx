@@ -67,7 +67,7 @@ const ConnectToMatic = (props: { handleOpenModal: any }) => {
     >
       <Box px='3'>
         <Text color='white' fontSize='md'>
-          {voteBalance && voteBalance} hoots
+          {voteBalance && voteBalance} votes
         </Text>
       </Box>
       <Button
