@@ -22,27 +22,31 @@ import { ethers } from 'ethers'
 const TokenPurchase = () => {
   const [tokenAmount, setTokenAmount] = useState<number>(1)
   const [approving, setApproving] = useState<boolean>(false)
+  const [initialAllowanceChecked, setInitialAllowanceChecked] =
+    useState<boolean>(false)
   const [allowance, setAllowance] = useState<BigNumber>(BigNumber.from(0))
   const { account, library } = useEthers()
 
+  //makes initail check for allowance
   useEffect(() => {
-    // axios
-    //   .get(
-    //     'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd'
-    //   )
-    //   .then((response) => {
-    //     setEthPriceUSD(response.data['ethereum'].usd)
-    //   })
-  }, [account, allowance, library])
-
-  //checks every 5s if allowance is set
-  useEffect(() => {
-    if (allowance.eq(0)) {
+    if (!initialAllowanceChecked) {
       ethersDAIAllowance(account, library).then((res) => {
         setAllowance(res)
       })
+      setInitialAllowanceChecked(true)
     }
-  }, [account, allowance, library])
+  }, [account, allowance, initialAllowanceChecked, library])
+
+  //checks every 3s if allowance is set
+  useEffect(() => {
+    if (initialAllowanceChecked && allowance.eq(0)) {
+      setTimeout(() => {
+        ethersDAIAllowance(account, library).then((res) => {
+          setAllowance(res)
+        })
+      }, 3000)
+    }
+  }, [account, allowance, initialAllowanceChecked, library])
 
   const mintTokens = async () => {
     console.log(

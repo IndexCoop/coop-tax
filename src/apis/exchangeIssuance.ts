@@ -54,7 +54,6 @@ export const ethersDAIAllowance = async (
   library: any
 ): Promise<BigNumber> => {
   try {
-    console.log('allowance')
     const daiContract = await getERC20Contract(library.getSigner(), DAI_ADDRESS)
     const allowance = await daiContract.allowance(
       account,
