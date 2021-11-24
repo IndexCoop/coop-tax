@@ -10,6 +10,7 @@ import {
   ethersGetVotes,
   ethersGetMaxComponents,
   ethersVote,
+  ethersIsTokenLiquid,
 } from 'apis/votingContract'
 import SelectedTokens from './SelectedTokens'
 
@@ -43,15 +44,23 @@ const VoteList = () => {
     })
   }, [account, library, maxComponents, voteBalance])
 
-  const handleOnSelect = (item: TokenData) => {
-    if (selectedTokens.length < maxComponents) {
-      setDisableSubmit(false)
-      if (selectedTokens.indexOf(item) === -1) {
-        let newSelected = selectedTokens.concat(item)
-        setSelectedTokens(newSelected)
+  const handleOnSelect = async (item: TokenData) => {
+    const isTokenLiquid = await ethersIsTokenLiquid(library, item.address)
+    if (isTokenLiquid) {
+      if (selectedTokens.length < maxComponents) {
+        setDisableSubmit(false)
+        if (selectedTokens.indexOf(item) === -1) {
+          let newSelected = selectedTokens.concat(item)
+          setSelectedTokens(newSelected)
+        }
+      } else {
+        toast.warn(`cannot have more than ${maxComponents} tokens selected`, {
+          autoClose: 4000,
+        })
       }
     } else {
-      toast.warn(`cannot have more than ${maxComponents} tokens selected`, {
+      toast.error('the selected token is illiquid and cant be used', {
+        toastId: 'couldnt-buy',
         autoClose: 4000,
       })
     }

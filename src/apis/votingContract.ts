@@ -60,3 +60,24 @@ export const ethersVote = async (
     })
   }
 }
+
+export const ethersIsTokenLiquid = async (
+  library: any,
+  address: string
+): Promise<boolean> => {
+  try {
+    const votingContract = await new Contract(
+      APE_REBALANCE_EXT_ADDRESS,
+      APE_REBALANCE_EXT_ABI,
+      library.getSigner()
+    )
+
+    return await votingContract.isTokenLiquid(address)
+  } catch (err) {
+    toast.warn('there was a problem submitting the vote', {
+      toastId: 'failed-to-vote',
+      autoClose: 4000,
+    })
+  }
+  return false
+}
