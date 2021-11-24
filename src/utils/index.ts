@@ -22,7 +22,7 @@ export const getExchangeIssuanceContract = async (
 }
 
 export const getERC20Contract = async (
-  provider: Provider,
+  provider: Signer | Provider | undefined,
   address: string
 ): Promise<Contract> => {
   return await new Contract(address, ERC20_ABI, provider)

@@ -10,23 +10,39 @@ import {
   NumberInputField,
 } from '@chakra-ui/react'
 
-import { ethersIssueFromWeth } from 'apis/exchangeIssuance'
+import {
+  ethersApproveDAI,
+  ethersDAIAllowance,
+  ethersIssueFromWeth,
+  ethersIssueSetForExactToken,
+} from 'apis/exchangeIssuance'
 import { toWei } from 'utils'
+import { ethers } from 'ethers'
 
 const TokenPurchase = () => {
   const [tokenAmount, setTokenAmount] = useState<number>(1)
-  const [ethPriceUSD, setEthPriceUSD] = useState<number>(1)
+  const [approving, setApproving] = useState<boolean>(false)
+  const [allowance, setAllowance] = useState<BigNumber>(BigNumber.from(0))
   const { account, library } = useEthers()
 
   useEffect(() => {
-    axios
-      .get(
-        'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd'
-      )
-      .then((response) => {
-        setEthPriceUSD(response.data['ethereum'].usd)
+    // axios
+    //   .get(
+    //     'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd'
+    //   )
+    //   .then((response) => {
+    //     setEthPriceUSD(response.data['ethereum'].usd)
+    //   })
+  }, [account, allowance, library])
+
+  //checks every 5s if allowance is set
+  useEffect(() => {
+    if (allowance.eq(0)) {
+      ethersDAIAllowance(account, library).then((res) => {
+        setAllowance(res)
       })
-  }, [])
+    }
+  }, [account, allowance, library])
 
   const mintTokens = async () => {
     console.log(
@@ -34,23 +50,60 @@ const TokenPurchase = () => {
       account,
       library,
       tokenAmount,
-      toWei(BigNumber.from(1).div(Math.floor(ethPriceUSD)).add(1)).toString()
+      toWei(BigNumber.from(1)).toString()
     )
-    const tx = await ethersIssueFromWeth(
+    const tx = await ethersIssueSetForExactToken(
       library,
-      toWei(BigNumber.from(tokenAmount)),
-      toWei(BigNumber.from(1).div(Math.ceil(ethPriceUSD)).add(1)) // effective max spend $1 ish
+      BigNumber.from(tokenAmount),
+      BigNumber.from(1) // effective max spend 1 DAI
     )
     console.log('tx', tx)
+  }
+
+  const approveTokens = async () => {
+    setApproving(true)
+    ethersApproveDAI(library).then((res) => {
+      console.log('approval res', res)
+    })
   }
 
   const formatValue = (val: number) => {
     return val ? Math.round(val) : 0
   }
 
+  const MintButton = () => {
+    return (
+      <Button
+        width='150px'
+        mt='20px'
+        colorScheme='telegram'
+        variant='solid'
+        onClick={mintTokens}
+      >
+        mint tokens
+      </Button>
+    )
+  }
+
+  const ApproveButton = () => {
+    let buttonText = approving ? 'approving...' : 'approve DAI'
+    return (
+      <Button
+        width='150px'
+        mt='20px'
+        colorScheme='telegram'
+        variant='solid'
+        disabled={approving}
+        onClick={approveTokens}
+      >
+        {buttonText}
+      </Button>
+    )
+  }
+
   return (
     <Flex flexDirection='column' alignItems='center'>
-      <Text fontWeight='bold'>HOOT Index</Text>
+      <Text fontWeight='bold'>HOOT index</Text>
       <NumberInput
         size='lg'
         width='150px'
@@ -65,16 +118,18 @@ const TokenPurchase = () => {
       >
         <NumberInputField />
       </NumberInput>
-
-      <Button
-        width='150px'
-        mt='20px'
-        colorScheme='telegram'
-        variant='solid'
-        onClick={mintTokens}
-      >
-        mint tokens
-      </Button>
+      {allowance.eq(0) ? ApproveButton() : MintButton()}
+      <Text w='25vw' mt='25px' fontSize='sm'>
+        redeeming is not enabled yet. we're pretty sure the devs will add it at
+        some point. give your funds a kiss goodbye just in case they don't make
+        it back from normandy.
+      </Text>
+      <Text w='25vw' mt='25px' fontSize='xs'>
+        voting on coop.tax is currently available to bronze, silver, and gold
+        owls who have been airdropped an owl nft on polygon. if you think you
+        should've received an airdrop, please bother the crap out of us on the
+        #coop-tax discord channel.
+      </Text>
     </Flex>
   )
 }

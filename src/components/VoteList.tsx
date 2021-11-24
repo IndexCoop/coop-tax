@@ -111,37 +111,49 @@ const VoteList = () => {
     setDisableSubmit(true)
   }
 
-  return (
-    <Flex flexDirection='column' alignItems='center'>
-      <Select
-        isSearchable
-        name='color'
-        options={tokenOptions}
-        filterOption={createFilter({ ignoreAccents: false })}
-        onChange={(value) => {
-          if (value !== null) handleOnSelect(value.token)
-        }}
-        className='token-select'
-      />
-      <Text mb='10px'>
-        selected {selectedTokens.length}/{maxComponents} tokens
-      </Text>
-      <SelectedTokens
-        selectedTokens={selectedTokens}
-        handleOnVote={handleOnVote}
-        handleOnRemoveToken={handleOnRemoveToken}
-      />
-      <Button
-        width='150px'
-        colorScheme='telegram'
-        variant='solid'
-        disabled={disableSubmit}
-        onClick={handleOnSubmit}
-      >
-        give a hoot
-      </Button>
-    </Flex>
-  )
+  const votingEnabled = () => {
+    return (
+      <Flex flexDirection='column' alignItems='center'>
+        <Select
+          isSearchable
+          name='color'
+          options={tokenOptions}
+          filterOption={createFilter({ ignoreAccents: false })}
+          onChange={(value) => {
+            if (value !== null) handleOnSelect(value.token)
+          }}
+          className='token-select'
+        />
+        <Text mb='10px'>
+          selected {selectedTokens.length}/{maxComponents} tokens
+        </Text>
+        <SelectedTokens
+          selectedTokens={selectedTokens}
+          handleOnVote={handleOnVote}
+          handleOnRemoveToken={handleOnRemoveToken}
+        />
+        <Button
+          width='150px'
+          colorScheme='telegram'
+          variant='solid'
+          disabled={disableSubmit}
+          onClick={handleOnSubmit}
+        >
+          give a hoot
+        </Button>
+      </Flex>
+    )
+  }
+
+  const votingDisabled = () => {
+    return (
+      <Flex flexDirection='column' alignItems='center'>
+        <Text>nah fam get rekt, you're not allowed to vote</Text>
+      </Flex>
+    )
+  }
+
+  return <div>{false ? votingDisabled() : votingEnabled()}</div>
 }
 
 export default VoteList
