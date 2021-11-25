@@ -14,7 +14,7 @@ import { CloseIcon } from '@chakra-ui/icons'
 import { useEthers } from '@usedapp/core'
 
 import { TokenData } from './VoteList'
-import { ethersGetVotes } from 'apis/votingContract'
+import { ethersGetVotes } from 'apis/rebalanceExtension'
 
 const SelectedTokens = (props: {
   selectedTokens: TokenData[]

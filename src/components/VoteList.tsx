@@ -11,7 +11,7 @@ import {
   ethersGetMaxComponents,
   ethersVote,
   ethersIsTokenLiquid,
-} from 'apis/votingContract'
+} from 'apis/rebalanceExtension'
 import SelectedTokens from './SelectedTokens'
 import { fromWei, toWei } from 'utils'
 

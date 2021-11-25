@@ -18,10 +18,12 @@ import { toWei } from 'utils'
 import { toast } from 'react-toastify'
 import { ethers } from 'ethers'
 import axios from 'axios'
+import { ethersGetSetValue } from 'apis/rebalanceExtension'
 
 const TokenPurchase = () => {
   const [tokenAmount, setTokenAmount] = useState<number>(1)
   const [etherPrice, setEtherPrice] = useState<number>(1)
+  const [setPrice, setSetPrice] = useState<BigNumber>(BigNumber.from(0))
   const [approving, setApproving] = useState<boolean>(false)
   const [initialAllowanceChecked, setInitialAllowanceChecked] =
     useState<boolean>(false)
@@ -57,6 +59,18 @@ const TokenPurchase = () => {
     }
   }, [account, allowance, initialAllowanceChecked, library])
 
+  //checks set price
+  useEffect(() => {
+    ethersGetSetValue(library).then((res) => {
+      setSetPrice(res)
+    })
+  }, [library])
+
+  // calculates cost of token based on set value and amount wishing to buy
+  const getSetCost = () => {
+    return toWei(setPrice.mul(BigNumber.from(tokenAmount)))
+  }
+
   const mintTokens = async () => {
     const DOLLAR_WETH = (1 / Math.floor(etherPrice)).toFixed(10).toString()
     console.log(
@@ -66,12 +80,13 @@ const TokenPurchase = () => {
       toWei(BigNumber.from(tokenAmount)).toString(),
       toWei(BigNumber.from(tokenAmount).add(1)).toString(),
       DOLLAR_WETH,
-      ethers.utils.parseEther(DOLLAR_WETH).toString()
+      ethers.utils.parseEther(DOLLAR_WETH).toString(),
+      getSetCost()
     )
     const tx = await ethersIssueExactSetFromToken(
       library,
       toWei(BigNumber.from(tokenAmount)),
-      ethers.utils.parseEther(DOLLAR_WETH) //roughly $1 in WETH
+      ethers.utils.parseEther(DOLLAR_WETH) //roughly $1 in WETH, in future will be getSetCost()
     )
     if (tx && tx.type && tx.type === 0 && tx.hash) {
       const successMsg = 'https://polygonscan.com/tx/' + tx.hash
