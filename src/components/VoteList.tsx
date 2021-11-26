@@ -102,7 +102,7 @@ const VoteList = () => {
 
   const handleOnSubmit = () => {
     const addresses = votes.map((vote) => vote.address)
-    const finalVotes = votes.map((vote) => toWei(BigNumber.from(vote.votes)))
+    const finalVotes = votes.map((vote) => toWei(vote.votes))
     const voteTally = totalVotes(finalVotes)
     // eslint-disable-next-line react-hooks/rules-of-hooks
     if (addresses.length === 0 || finalVotes.length === 0)
@@ -110,7 +110,7 @@ const VoteList = () => {
         autoClose: 4000,
       })
     else if (
-      voteTally.lte(toWei(BigNumber.from(voteBalance))) &&
+      voteTally.lte(toWei(voteBalance)) &&
       !disableSubmit
     )
       ethersVote(library, addresses, finalVotes)

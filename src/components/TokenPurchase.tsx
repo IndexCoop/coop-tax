@@ -14,7 +14,7 @@ import {
   ethersIssueExactSetFromToken,
   ethersWETHAllowance,
 } from 'apis/exchangeIssuance'
-import { toWei } from 'utils'
+import { preciseMul, toWei } from 'utils'
 import { toast } from 'react-toastify'
 import { ethers } from 'ethers'
 import axios from 'axios'
@@ -68,7 +68,7 @@ const TokenPurchase = () => {
 
   // calculates cost of token based on set value and amount wishing to buy
   const getSetCost = () => {
-    return toWei(setPrice.mul(BigNumber.from(tokenAmount)))
+    return setPrice.mul(BigNumber.from(tokenAmount))
   }
 
   const mintTokens = async () => {
@@ -77,16 +77,20 @@ const TokenPurchase = () => {
       'txparams',
       account,
       library,
-      toWei(BigNumber.from(tokenAmount)).toString(),
-      toWei(BigNumber.from(tokenAmount).add(1)).toString(),
+      toWei(tokenAmount).toString(),
+      toWei(tokenAmount + 1).toString(),
       DOLLAR_WETH,
       ethers.utils.parseEther(DOLLAR_WETH).toString(),
       getSetCost()
     )
+
+    // max 5% slippage
+    const maxIn = preciseMul(getSetCost(), toWei(1.05))
+    
     const tx = await ethersIssueExactSetFromToken(
       library,
-      toWei(BigNumber.from(tokenAmount)),
-      ethers.utils.parseEther(DOLLAR_WETH) //roughly $1 in WETH, in future will be getSetCost()
+      toWei(tokenAmount),
+      maxIn
     )
     if (tx && tx.type && tx.type === 0 && tx.hash) {
       const successMsg = 'https://polygonscan.com/tx/' + tx.hash
