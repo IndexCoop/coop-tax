@@ -26,7 +26,7 @@ const ConnectButton = (props: { handleOpenModal: any }) => {
       borderRadius='xl'
       py='0'
     >
-      <ConnectToMatic handleOpenModal={props.handleOpenModal} />
+      <ConnectToPolygon handleOpenModal={props.handleOpenModal} />
     </Box>
   ) : (
     <div>
@@ -55,7 +55,7 @@ const ConnectButton = (props: { handleOpenModal: any }) => {
 }
 export default ConnectButton
 
-const ConnectToMatic = (props: { handleOpenModal: any }) => {
+const ConnectToPolygon = (props: { handleOpenModal: any }) => {
   const [voteBalance, setVoteBalance] = useState<number>(0)
   const { chainId, account, library } = useEthers()
 
@@ -65,6 +65,23 @@ const ConnectToMatic = (props: { handleOpenModal: any }) => {
         setVoteBalance(val)
       })
   }, [account, library])
+
+  const addPolygon = () => {
+    library?.send('wallet_addEthereumChain', [
+      {
+        chainId: '0x89',
+        chainName: 'Polygon',
+        nativeCurrency: {
+          name: 'Matic',
+          symbol: 'MATIC',
+          decimals: 18,
+        },
+        rpcUrls: ['https://rpc-mainnet.maticvigil.com'],
+        blockExplorerUrls: ['https://polygonscan.com/'],
+      },
+      account,
+    ])
+  }
 
   return chainId && chainId === ChainId.Polygon ? (
     <Box
@@ -112,8 +129,9 @@ const ConnectToMatic = (props: { handleOpenModal: any }) => {
       fontWeight='medium'
       borderRadius='xl'
       border='1px solid transparent'
+      onClick={() => addPolygon()}
     >
-      Switch to Matic
+      Switch to Polygon
     </Button>
   )
 }
