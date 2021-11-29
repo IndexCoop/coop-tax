@@ -1,4 +1,4 @@
-import { Button, Flex, Text } from '@chakra-ui/react'
+import { Button, Flex, Link, Text } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { BigNumber } from '@ethersproject/bignumber'
@@ -109,10 +109,7 @@ const VoteList = () => {
       toast.error(`you must select tokens to vote on before submitting`, {
         autoClose: 4000,
       })
-    else if (
-      voteTally.lte(toWei(voteBalance)) &&
-      !disableSubmit
-    )
+    else if (voteTally.lte(toWei(voteBalance)) && !disableSubmit)
       ethersVote(library, addresses, finalVotes)
     else
       toast.error(
@@ -132,6 +129,17 @@ const VoteList = () => {
         <Text fontSize='xs'>
           use your votes to vote on tokens to include in the next weekly
           rebalance
+        </Text>
+        <Text fontSize='xs' mt='5px'>
+          thanks to{' '}
+          <Link href='https://twitter.com/GuadaTonti' isExternal>
+            Guada
+          </Link>{' '}
+          and the{' '}
+          <Link href='https://twitter.com/poapxyz' isExternal>
+            POAP
+          </Link>{' '}
+          team for their creative work on these owl NFTs.
         </Text>
         <Select
           isSearchable
