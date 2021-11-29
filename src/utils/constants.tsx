@@ -18,6 +18,10 @@ export const HOOT_SET_TOKEN_ADDRESS =
   process.env.REACT_APP_HOOT_SET_TOKEN_ADDRESS ||
   '0xf282dd7e23d8db89671b70cd3f0ecb1f957a2be0'
 
+/** API KEYS **/
+export const ALCHEMY_KEY = process.env.REACT_APP_ALCHEMY_KEY
+
+
 /** ABIs */
 export const OWL_NFT_ABI = [
   { inputs: [], stateMutability: 'nonpayable', type: 'constructor' },

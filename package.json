@@ -17,6 +17,7 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@usedapp/core": "^0.5.4",
+    "@web3-react/walletconnect-connector": "^6.2.8",
     "axios": "^0.24.0",
     "ethers": "^5.5.1",
     "framer-motion": "^5.2.1",

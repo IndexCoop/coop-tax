@@ -1,16 +1,22 @@
-import { Button, Box, Text } from '@chakra-ui/react'
+import { Button, Box, Text, useDisclosure } from '@chakra-ui/react'
 import { ChainId, useEthers } from '@usedapp/core'
 import { useState, useEffect } from 'react'
 import Identicon from './Identicon'
 
 import { ethersGetVotes } from 'apis/rebalanceExtension'
+import ConnectModal from './ConnectModal'
 
 const ConnectButton = (props: { handleOpenModal: any }) => {
-  const { account, activateBrowserWallet } = useEthers()
+  const { account } = useEthers()
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   const handleConnectWallet = () => {
-    activateBrowserWallet()
+    onOpen()
   }
+
+  useEffect(() => {
+    console.log(account)
+  }, [account])
 
   return account ? (
     <Box
@@ -23,25 +29,28 @@ const ConnectButton = (props: { handleOpenModal: any }) => {
       <ConnectToPolygon handleOpenModal={props.handleOpenModal} />
     </Box>
   ) : (
-    <Button
-      onClick={handleConnectWallet}
-      bg='blue.800'
-      color='blue.300'
-      fontSize='lg'
-      fontWeight='medium'
-      borderRadius='xl'
-      border='1px solid transparent'
-      _hover={{
-        borderColor: 'blue.700',
-        color: 'blue.400',
-      }}
-      _active={{
-        backgroundColor: 'blue.800',
-        borderColor: 'blue.700',
-      }}
-    >
-      Connect to a wallet
-    </Button>
+    <div>
+      <Button
+        onClick={handleConnectWallet}
+        bg='blue.800'
+        color='blue.300'
+        fontSize='lg'
+        fontWeight='medium'
+        borderRadius='xl'
+        border='1px solid transparent'
+        _hover={{
+          borderColor: 'blue.700',
+          color: 'blue.400',
+        }}
+        _active={{
+          backgroundColor: 'blue.800',
+          borderColor: 'blue.700',
+        }}
+      >
+        Connect to a wallet
+      </Button>
+      <ConnectModal isOpen={isOpen} onClose={onClose} />
+    </div>
   )
 }
 export default ConnectButton
