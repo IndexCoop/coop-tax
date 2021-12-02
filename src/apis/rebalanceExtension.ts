@@ -44,7 +44,8 @@ export const ethersGetMaxComponents = async (library: any): Promise<number> => {
 export const ethersVote = async (
   library: any,
   components: string[],
-  votes: BigNumber[]
+  votes: BigNumber[],
+  setDisableSubmit: (value: boolean) => void
 ) => {
   try {
     const rebalContract = await new Contract(
@@ -58,6 +59,7 @@ export const ethersVote = async (
       toastId: 'failed-to-vote',
       autoClose: 4000,
     })
+    setDisableSubmit(false)
   }
 }
 

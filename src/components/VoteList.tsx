@@ -109,9 +109,10 @@ const VoteList = () => {
       toast.error(`you must select tokens to vote on before submitting`, {
         autoClose: 4000,
       })
-    else if (voteTally.lte(toWei(voteBalance)) && !disableSubmit)
-      ethersVote(library, addresses, finalVotes)
-    else
+    else if (voteTally.lte(toWei(voteBalance)) && !disableSubmit) {
+      setDisableSubmit(true)
+      ethersVote(library, addresses, finalVotes, setDisableSubmit)
+    } else
       toast.error(
         `you only have ${voteBalance} hoots to give, but you tried to give ${fromWei(
           voteTally
@@ -120,7 +121,6 @@ const VoteList = () => {
           autoClose: 4000,
         }
       )
-    setDisableSubmit(true)
   }
 
   const votingEnabled = () => {
