@@ -49,7 +49,6 @@ const TokenPurchase = () => {
 
   const mintTokens = async () => {
     const maxIn = await getMaxIn(library, toWei(tokenAmount))
-    console.log(allowance.toString())
     const tx = await ethersIssueExactSetFromToken(
       library,
       toWei(tokenAmount),
