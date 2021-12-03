@@ -83,21 +83,3 @@ export const ethersIsTokenLiquid = async (
   }
   return false
 }
-
-export const ethersGetSetValue = async (library: any): Promise<BigNumber> => {
-  try {
-    const rebalContract = await new Contract(
-      APE_REBALANCE_EXT_ADDRESS,
-      APE_REBALANCE_EXT_ABI,
-      library.getSigner()
-    )
-
-    return await rebalContract.getSetValue()
-  } catch (err) {
-    toast.warn('there was a problem retrieving the set value', {
-      toastId: 'failed-to-value',
-      autoClose: 4000,
-    })
-    return BigNumber.from(0)
-  }
-}
