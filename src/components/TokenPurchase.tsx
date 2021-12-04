@@ -13,17 +13,13 @@ import {
   ethersApproveWETH,
   ethersIssueExactSetFromToken,
   ethersWETHAllowance,
+  getMaxIn,
 } from 'apis/exchangeIssuance'
-import { preciseMul, toWei } from 'utils'
+import { toWei } from 'utils'
 import { toast } from 'react-toastify'
-import { ethers } from 'ethers'
-import axios from 'axios'
-import { ethersGetSetValue } from 'apis/rebalanceExtension'
 
 const TokenPurchase = () => {
   const [tokenAmount, setTokenAmount] = useState<number>(1)
-  const [etherPrice, setEtherPrice] = useState<number>(1)
-  const [setPrice, setSetPrice] = useState<BigNumber>(BigNumber.from(0))
   const [approving, setApproving] = useState<boolean>(false)
   const [initialAllowanceChecked, setInitialAllowanceChecked] =
     useState<boolean>(false)
@@ -32,21 +28,13 @@ const TokenPurchase = () => {
 
   //makes initail check for allowance
   useEffect(() => {
-    axios
-      .get(
-        'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd'
-      )
-      .then((response) => {
-        setEtherPrice(response.data['ethereum'].usd)
-        console.log('response', etherPrice)
-      })
     if (!initialAllowanceChecked) {
       ethersWETHAllowance(account, library).then((res) => {
         setAllowance(res)
       })
       setInitialAllowanceChecked(true)
     }
-  }, [account, allowance, etherPrice, initialAllowanceChecked, library])
+  }, [account, allowance, initialAllowanceChecked, library])
 
   //checks every 3s if allowance is set
   useEffect(() => {
@@ -59,39 +47,14 @@ const TokenPurchase = () => {
     }
   }, [account, allowance, initialAllowanceChecked, library])
 
-  //checks set price
-  useEffect(() => {
-    ethersGetSetValue(library).then((res) => {
-      setSetPrice(res)
-    })
-  }, [library])
-
-  // calculates cost of token based on set value and amount wishing to buy
-  const getSetCost = () => {
-    return setPrice.mul(BigNumber.from(tokenAmount))
-  }
-
   const mintTokens = async () => {
-    const DOLLAR_WETH = (1 / Math.floor(etherPrice)).toFixed(10).toString()
-    console.log(
-      'txparams',
-      account,
-      library,
-      toWei(tokenAmount).toString(),
-      toWei(tokenAmount + 1).toString(),
-      DOLLAR_WETH,
-      ethers.utils.parseEther(DOLLAR_WETH).toString(),
-      getSetCost()
-    )
-
-    // max 5% slippage
-    const maxIn = preciseMul(getSetCost(), toWei(1.05))
-    
+    const maxIn = await getMaxIn(library, toWei(tokenAmount))
     const tx = await ethersIssueExactSetFromToken(
       library,
       toWei(tokenAmount),
       maxIn
     )
+
     if (tx && tx.type && tx.type === 0 && tx.hash) {
       const successMsg = 'https://polygonscan.com/tx/' + tx.hash
       toast.success(successMsg, {
