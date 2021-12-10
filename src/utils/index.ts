@@ -1,4 +1,4 @@
-import { BigNumber, BigNumberish, Contract, Signer } from 'ethers'
+import { BigNumber, Contract, Signer } from 'ethers'
 import { Provider } from '@ethersproject/abstract-provider'
 import {
   ERC20_ABI,
@@ -53,7 +53,7 @@ export const getAllowance = async (
  * @returns
  */
 export const toWei = (number: number, power: number = 18): BigNumber => {
-  return parseEther(number.toString()).mul(BigNumber.from(10).pow(18-power))
+  return parseEther(number.toString()).mul(BigNumber.from(10).pow(18 - power))
 }
 
 /**
@@ -66,6 +66,6 @@ export const fromWei = (number: BigNumber, power: number = 18) => {
   return number.div(BigNumber.from(10).pow(power))
 }
 
-export const preciseMul =(a: BigNumber, b: BigNumber): BigNumber => {
+export const preciseMul = (a: BigNumber, b: BigNumber): BigNumber => {
   return a.mul(b).div(toWei(1))
 }

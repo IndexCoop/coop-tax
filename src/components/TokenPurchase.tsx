@@ -14,9 +14,12 @@ import {
   ethersIssueExactSetFromToken,
   ethersWETHAllowance,
   getMaxIn,
+  getSetValue,
 } from 'apis/exchangeIssuance'
-import { toWei } from 'utils'
+import { fromWei, toWei } from 'utils'
 import { toast } from 'react-toastify'
+import { utils } from 'ethers'
+import axios from 'axios'
 
 const TokenPurchase = () => {
   const [tokenAmount, setTokenAmount] = useState<number>(1)
@@ -24,6 +27,8 @@ const TokenPurchase = () => {
   const [initialAllowanceChecked, setInitialAllowanceChecked] =
     useState<boolean>(false)
   const [allowance, setAllowance] = useState<BigNumber>(BigNumber.from(0))
+  const [ethPrice, setEthPrice] = useState<number>(0)
+  const [tokenNAV, setTokenNAV] = useState<string>('$1')
   const { account, library } = useEthers()
 
   //makes initail check for allowance
@@ -46,6 +51,24 @@ const TokenPurchase = () => {
       }, 3000)
     }
   }, [account, allowance, initialAllowanceChecked, library])
+
+  useEffect(() => {
+    axios
+      .get(
+        'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd'
+      )
+      .then((result: any) => {
+        setEthPrice(result.data.ethereum.usd as number)
+      })
+
+    getSetValue(library).then((result: BigNumber) => {
+      setTokenNAV(
+        parseFloat(
+          utils.formatEther(fromWei(result.mul(toWei(ethPrice))))
+        ).toFixed(2)
+      )
+    })
+  })
 
   const mintTokens = async () => {
     const maxIn = await getMaxIn(library, toWei(tokenAmount))
@@ -109,7 +132,7 @@ const TokenPurchase = () => {
   return (
     <Flex flexDirection='column' alignItems='center'>
       <Text fontWeight='bold'>HOOT index</Text>
-      <Text fontSize='xs'>1 HOOT ~= $1 WETH</Text>
+      <Text fontSize='s'>${tokenNAV}</Text>
       <NumberInput
         size='lg'
         width='150px'

@@ -1,6 +1,11 @@
 import { BigNumber, ethers } from 'ethers'
 import { toast } from 'react-toastify'
-import { getERC20Contract, getExchangeIssuanceContract, preciseMul, toWei } from 'utils'
+import {
+  getERC20Contract,
+  getExchangeIssuanceContract,
+  preciseMul,
+  toWei,
+} from 'utils'
 import {
   HOOT_SET_TOKEN_ADDRESS,
   POLYGON_EXCHANGE_ISSUANCE,
@@ -77,8 +82,29 @@ export const ethersWETHAllowance = async (
   }
 }
 
-export const getMaxIn = async (library: any, amountOut: BigNumber): Promise<BigNumber> => {
-  const exchangeIssuance = await getExchangeIssuanceContract(library.getSigner())
-  const value = await exchangeIssuance.getAmountInToIssueExactSet(HOOT_SET_TOKEN_ADDRESS, WETH_ADDRESS, amountOut)
+export const getMaxIn = async (
+  library: any,
+  amountOut: BigNumber
+): Promise<BigNumber> => {
+  const exchangeIssuance = await getExchangeIssuanceContract(
+    library.getSigner()
+  )
+  const value = await exchangeIssuance.getAmountInToIssueExactSet(
+    HOOT_SET_TOKEN_ADDRESS,
+    WETH_ADDRESS,
+    amountOut
+  )
   return preciseMul(value, toWei(1.05))
+}
+
+export const getSetValue = async (library: any): Promise<BigNumber> => {
+  const exchangeIssuance = await getExchangeIssuanceContract(
+    library.getSigner()
+  )
+  const value = await exchangeIssuance.getAmountInToIssueExactSet(
+    HOOT_SET_TOKEN_ADDRESS,
+    WETH_ADDRESS,
+    toWei(1)
+  )
+  return value
 }
