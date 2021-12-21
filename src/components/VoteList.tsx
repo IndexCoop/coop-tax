@@ -5,6 +5,7 @@ import { BigNumber } from '@ethersproject/bignumber'
 import Select, { createFilter } from 'react-select'
 import { toast } from 'react-toastify'
 import { useEthers } from '@usedapp/core'
+import { IndexCoopMaticTokens } from '@indexcoop/tokenlists'
 
 import {
   ethersGetVotes,
@@ -14,6 +15,12 @@ import {
 } from 'apis/rebalanceExtension'
 import SelectedTokens from './SelectedTokens'
 import { fromWei, toWei } from 'utils'
+
+const mapTokenDataToOption = (token: TokenData): TokenOption => ({
+  value: token.address,
+  label: token.symbol,
+  token: token,
+})
 
 const VoteList = () => {
   const [tokenOptions, setTokenOptions] = useState<TokenOption[]>([])
@@ -30,11 +37,15 @@ const VoteList = () => {
         'https://unpkg.com/quickswap-default-token-list@1.2.4/build/quickswap-default.tokenlist.json'
       )
       .then((response) => {
-        setTokenOptions(
-          response.data.tokens.map((token: TokenData) => {
-            return { value: token.address, label: token.symbol, token: token }
-          })
+        const quickSwapTokenList =
+          response.data.tokens.map(mapTokenDataToOption)
+        const indexTokenList = IndexCoopMaticTokens.map(mapTokenDataToOption)
+
+        const fullTokenList = [...quickSwapTokenList, ...indexTokenList].sort(
+          (a: TokenOption, b: TokenOption) => a.label.localeCompare(b.label)
         )
+
+        setTokenOptions(fullTokenList)
       })
     ethersGetVotes(account, library).then((val) => {
       setVoteBalance(val)
