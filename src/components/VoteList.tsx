@@ -16,11 +16,22 @@ import {
 import SelectedTokens from './SelectedTokens'
 import { fromWei, toWei } from 'utils'
 
-const mapTokenDataToOption = (token: TokenData): TokenOption => ({
+export const mapTokenDataToOption = (token: TokenData): TokenOption => ({
   value: token.address,
   label: token.symbol,
   token: token,
 })
+
+/**
+ * Map token list that is unique by address and sorted by symbol
+ */
+export const uniqueSortedTokenList = (
+  tokenList: TokenOption[]
+): TokenOption[] => {
+  return [
+    ...new Map(tokenList.map((token) => [token['value'], token])).values(),
+  ].sort((a: TokenOption, b: TokenOption) => a.label.localeCompare(b.label))
+}
 
 const VoteList = () => {
   const [tokenOptions, setTokenOptions] = useState<TokenOption[]>([])
@@ -37,13 +48,15 @@ const VoteList = () => {
         'https://unpkg.com/quickswap-default-token-list@1.2.4/build/quickswap-default.tokenlist.json'
       )
       .then((response) => {
-        const quickSwapTokenList =
+        const quickSwapTokenList: TokenOption[] =
           response.data.tokens.map(mapTokenDataToOption)
-        const indexTokenList = IndexCoopMaticTokens.map(mapTokenDataToOption)
+        const indexTokenList: TokenOption[] =
+          IndexCoopMaticTokens.map(mapTokenDataToOption)
 
-        const fullTokenList = [...quickSwapTokenList, ...indexTokenList].sort(
-          (a: TokenOption, b: TokenOption) => a.label.localeCompare(b.label)
-        )
+        const fullTokenList = uniqueSortedTokenList([
+          ...quickSwapTokenList,
+          ...indexTokenList,
+        ])
 
         setTokenOptions(fullTokenList)
       })
