@@ -1,11 +1,10 @@
 import { Button, Flex, Link, Text } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 import { BigNumber } from '@ethersproject/bignumber'
 import Select, { createFilter } from 'react-select'
 import { toast } from 'react-toastify'
 import { useEthers } from '@usedapp/core'
-import { IndexCoopMaticTokens } from '@indexcoop/tokenlists'
+import { MaticTokens } from '@indexcoop/tokenlists'
 
 import {
   ethersGetVotes,
@@ -43,23 +42,7 @@ const VoteList = () => {
   const { account, library } = useEthers()
 
   useEffect(() => {
-    axios
-      .get(
-        'https://unpkg.com/quickswap-default-token-list@1.2.4/build/quickswap-default.tokenlist.json'
-      )
-      .then((response) => {
-        const quickSwapTokenList: TokenOption[] =
-          response.data.tokens.map(mapTokenDataToOption)
-        const indexTokenList: TokenOption[] =
-          IndexCoopMaticTokens.map(mapTokenDataToOption)
-
-        const fullTokenList = uniqueSortedTokenList([
-          ...quickSwapTokenList,
-          ...indexTokenList,
-        ])
-
-        setTokenOptions(fullTokenList)
-      })
+    setTokenOptions(MaticTokens.map(mapTokenDataToOption))
     ethersGetVotes(account, library).then((val) => {
       setVoteBalance(val)
       if (val === 0) setDisableSubmit(true)
