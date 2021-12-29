@@ -8,7 +8,7 @@
     "@emotion/react": "^11.5.0",
     "@emotion/styled": "^11.3.0",
     "@ethersproject/units": "^5.5.0",
-    "@indexcoop/tokenlists": "^1.2.0",
+    "@indexcoop/tokenlists": "^1.5.0",
     "@metamask/jazzicon": "^2.0.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
