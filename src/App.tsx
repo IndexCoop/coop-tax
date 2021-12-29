@@ -16,6 +16,7 @@ import ConnectButton from 'components/ConnectButton'
 import AccountModal from 'components/AccountModal'
 import VoteList from 'components/VoteList'
 import TokenPurchase from 'components/TokenPurchase'
+import CompositionTable from 'components/CompositionTable'
 
 function App() {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -79,6 +80,7 @@ const AppContent = () => {
   return (
     <Flex flexDir='row' justifyContent='space-evenly' w='100vw' mt='30px'>
       <TokenPurchase />
+      <CompositionTable />
       <VoteList />
     </Flex>
   )

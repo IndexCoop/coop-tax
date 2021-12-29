@@ -131,8 +131,12 @@ const TokenPurchase = () => {
 
   return (
     <Flex flexDirection='column' alignItems='center'>
-      <Text fontWeight='bold'>HOOT index</Text>
-      <Text fontSize='s'>${tokenNAV}</Text>
+      <Text fontWeight='bold' color='#ffffff'>
+        HOOT index
+      </Text>
+      <Text fontSize='s' color='#ffffff'>
+        {tokenNAV}
+      </Text>
       <NumberInput
         size='lg'
         width='150px'
@@ -148,12 +152,12 @@ const TokenPurchase = () => {
         <NumberInputField />
       </NumberInput>
       {allowance.eq(0) ? ApproveButton() : MintButton()}
-      <Text w='25vw' mt='25px' fontSize='sm'>
+      <Text w='25vw' mt='25px' fontSize='sm' color='#ffffff'>
         redeeming is not enabled yet. we're pretty sure the devs will add it at
         some point. give your funds a kiss goodbye just in case they don't make
         it back from normandy.
       </Text>
-      <Text w='25vw' mt='25px' fontSize='xs'>
+      <Text w='25vw' mt='25px' fontSize='xs' color='#ffffff'>
         voting on coop.tax is currently available to bronze, silver, and gold
         owls who have been airdropped an owl nft on polygon. if you think you
         should've received an airdrop, please bother the crap out of us on the

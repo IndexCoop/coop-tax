@@ -10,6 +10,7 @@ import {
   HOOT_SET_TOKEN_ADDRESS,
   POLYGON_EXCHANGE_ISSUANCE,
   WETH_ADDRESS,
+  SET_TOKEN_ABI,
 } from 'utils/constants'
 
 export const ethersIssueExactSetFromToken = async (
@@ -107,4 +108,25 @@ export const getSetValue = async (library: any): Promise<BigNumber> => {
     toWei(1)
   )
   return value
+}
+
+/* This function will return the unit tokens that are present in the HOOT Index. */
+
+export const getTokens = async (
+  address: any,
+  library: any
+): Promise<BigNumber> => {
+  try {
+    const tokenContract = await getERC20Contract(
+      library.getSigner(),
+      HOOT_SET_TOKEN_ADDRESS,
+      SET_TOKEN_ABI
+    )
+    const tokens: BigNumber = await tokenContract.getComponents()
+    console.log('tokens ', tokens)
+    return BigNumber.from(tokens)
+  } catch (err) {
+    console.log('error', err)
+    return BigNumber.from(0)
+  }
 }
