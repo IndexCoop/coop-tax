@@ -847,7 +847,7 @@ export const POLYGON_EXCHANGE_ISSUANCE_ABI = [
         name: '_setToken',
         type: 'address',
       },
-      { internalType: 'address', name: '_outputToken', type: 'address' },
+      { internalType: 'contract IERC20', name: '_outputToken', type: 'address' },
       { internalType: 'uint256', name: '_amountSetToken', type: 'uint256' },
     ],
     name: 'getAmountOutOnRedeemSet',

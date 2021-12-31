@@ -11,9 +11,13 @@ import {
 
 import {
   ethersApproveWETH,
+  ethersApproveHOOT,
   ethersIssueExactSetFromToken,
+  ethersRedeemExactSetForToken,
   ethersWETHAllowance,
+  ethersHOOTAllowance,
   getMaxIn,
+  getAmountOut,
   getSetValue,
 } from 'apis/exchangeIssuance'
 import { fromWei, toWei } from 'utils'
@@ -26,7 +30,8 @@ const TokenPurchase = () => {
   const [approving, setApproving] = useState<boolean>(false)
   const [initialAllowanceChecked, setInitialAllowanceChecked] =
     useState<boolean>(false)
-  const [allowance, setAllowance] = useState<BigNumber>(BigNumber.from(0))
+  const [allowanceWETH, setAllowanceWETH] = useState<BigNumber>(BigNumber.from(0))
+  const [allowanceHOOT, setAllowanceHOOT] = useState<BigNumber>(BigNumber.from(0))
   const [ethPrice, setEthPrice] = useState<number>(0)
   const [tokenNAV, setTokenNAV] = useState<string>('$1')
   const { account, library } = useEthers()
@@ -35,22 +40,25 @@ const TokenPurchase = () => {
   useEffect(() => {
     if (!initialAllowanceChecked) {
       ethersWETHAllowance(account, library).then((res) => {
-        setAllowance(res)
+        setAllowanceWETH(res)
+      })
+      ethersHOOTAllowance(account, library).then((res) => {
+        setAllowanceHOOT(res)
       })
       setInitialAllowanceChecked(true)
     }
-  }, [account, allowance, initialAllowanceChecked, library])
+  }, [account, allowanceWETH, allowanceHOOT, initialAllowanceChecked, library])
 
   //checks every 3s if allowance is set
   useEffect(() => {
-    if (initialAllowanceChecked && allowance.eq(0)) {
+    if (initialAllowanceChecked && allowanceWETH.eq(0)) {
       setTimeout(() => {
         ethersWETHAllowance(account, library).then((res) => {
-          setAllowance(res)
+          setAllowanceWETH(res)
         })
       }, 3000)
     }
-  }, [account, allowance, initialAllowanceChecked, library])
+  }, [account, allowanceWETH, initialAllowanceChecked, library])
 
   useEffect(() => {
     axios
@@ -88,10 +96,36 @@ const TokenPurchase = () => {
     console.log('tx', tx)
   }
 
-  const approveTokens = async () => {
+  const redeemTokens = async () => {
+    const minOut = await getAmountOut(library, toWei(tokenAmount))
+    console.log('min ouy', minOut)
+    const tx = await ethersRedeemExactSetForToken(
+      library,
+      toWei(1),
+      minOut
+    )
+
+    if (tx && tx.type && tx.type === 0 && tx.hash) {
+      const successMsg = 'https://polygonscan.com/tx/' + tx.hash
+      toast.success(successMsg, {
+        toastId: 'redeem-tx',
+        autoClose: 10000,
+      })
+    }
+    console.log('tx', tx)
+  }
+
+  const approveWETH = async () => {
     setApproving(true)
     ethersApproveWETH(library).then((res) => {
       console.log('approval res', res)
+    })
+  }
+
+  const approveHOOT = async () => {
+    setApproving(true)
+    ethersApproveHOOT(library).then((res) => {
+      console.log('set approval res', res)
     })
   }
 
@@ -113,7 +147,21 @@ const TokenPurchase = () => {
     )
   }
 
-  const ApproveButton = () => {
+  const RedeemButton = () => {
+    return (
+      <Button
+        width='150px'
+        mt='20px'
+        colorScheme='telegram'
+        variant='solid'
+        onClick={redeemTokens}
+      >
+        redeem hoot for eth
+      </Button>
+    )
+  }
+
+  const ApproveWETHButton = () => {
     let buttonText = approving ? 'approving...' : 'approve WETH'
     return (
       <Button
@@ -122,17 +170,35 @@ const TokenPurchase = () => {
         colorScheme='telegram'
         variant='solid'
         disabled={approving}
-        onClick={approveTokens}
+        onClick={approveWETH}
       >
         {buttonText}
       </Button>
     )
   }
 
+  const ApproveHOOTButton = () => {
+    let buttonText = approving ? 'approving...' : 'approve HOOT'
+    return (
+      <Button
+        width='150px'
+        mt='20px'
+        colorScheme='telegram'
+        variant='solid'
+        disabled={approving}
+        onClick={approveHOOT}
+      >
+        {buttonText}
+      </Button>
+    )
+  }
+
+
   return (
     <Flex flexDirection='column' alignItems='center'>
       <Text fontWeight='bold'>HOOT index</Text>
       <Text fontSize='s'>${tokenNAV}</Text>
+      <Text fontSize='s'>hoot owned</Text>
       <NumberInput
         size='lg'
         width='150px'
@@ -147,7 +213,8 @@ const TokenPurchase = () => {
       >
         <NumberInputField />
       </NumberInput>
-      {allowance.eq(0) ? ApproveButton() : MintButton()}
+      {allowanceWETH.eq(0) ? ApproveWETHButton() : MintButton()}
+      {allowanceHOOT.eq(0) ? ApproveHOOTButton() : RedeemButton()}
       <Text w='25vw' mt='25px' fontSize='sm'>
         redeeming is not enabled yet. we're pretty sure the devs will add it at
         some point. give your funds a kiss goodbye just in case they don't make

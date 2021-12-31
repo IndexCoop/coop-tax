@@ -37,6 +37,31 @@ export const ethersIssueExactSetFromToken = async (
   }
 }
 
+export const ethersRedeemExactSetForToken = async (
+  library: any,
+  tokenAmount: BigNumber,
+  minAmountOut: BigNumber
+): Promise<any> => {
+  console.log('redeemExactSet')
+  try {
+    const eiContract = await getExchangeIssuanceContract(library.getSigner())
+    const redeemSetTx = await eiContract.redeemExactSetForToken(
+      HOOT_SET_TOKEN_ADDRESS,
+      WETH_ADDRESS,
+      tokenAmount,
+      minAmountOut
+    )
+    return redeemSetTx
+  } catch (err) {
+    toast.warn('there was an issue with exchange issuance', {
+      toastId: 'couldnt-redeem',
+      autoClose: 4000,
+    })
+    console.log('error', err)
+    return 'idk'
+  }
+}
+
 export const ethersApproveWETH = async (library: any) => {
   try {
     const wethContract = await getERC20Contract(
@@ -44,6 +69,27 @@ export const ethersApproveWETH = async (library: any) => {
       WETH_ADDRESS
     )
     const approvalSetTx = await wethContract.approve(
+      POLYGON_EXCHANGE_ISSUANCE,
+      ethers.constants.MaxUint256
+    )
+    return approvalSetTx
+  } catch (err) {
+    toast.warn('there was an issue with exchange issuance', {
+      toastId: 'approval-error',
+      autoClose: 4000,
+    })
+    console.log('error', err)
+    return 'idk'
+  }
+}
+
+export const ethersApproveHOOT = async (library: any) => {
+  try {
+    const hootContract = await getERC20Contract(
+      library.getSigner(),
+      HOOT_SET_TOKEN_ADDRESS
+    )
+    const approvalSetTx = await hootContract.approve(
       POLYGON_EXCHANGE_ISSUANCE,
       ethers.constants.MaxUint256
     )
@@ -82,6 +128,30 @@ export const ethersWETHAllowance = async (
   }
 }
 
+export const ethersHOOTAllowance = async (
+  account: any,
+  library: any
+): Promise<BigNumber> => {
+  try {
+    const hootContract = await getERC20Contract(
+      library.getSigner(),
+      HOOT_SET_TOKEN_ADDRESS
+    )
+    const allowance = await hootContract.allowance(
+      account,
+      POLYGON_EXCHANGE_ISSUANCE
+    )
+    return BigNumber.from(allowance)
+  } catch (err) {
+    toast.warn('there was an issue getting the allowance', {
+      toastId: 'allowance-error',
+      autoClose: 4000,
+    })
+    console.log('error', err)
+    return BigNumber.from(0)
+  }
+}
+
 export const getMaxIn = async (
   library: any,
   amountOut: BigNumber
@@ -96,6 +166,24 @@ export const getMaxIn = async (
   )
   return preciseMul(value, toWei(1.05))
 }
+
+export const getAmountOut = async (
+  library: any,
+  hootAmountIn: BigNumber
+): Promise<BigNumber> => {
+  const exchangeIssuance = await getExchangeIssuanceContract(
+    library.getSigner()
+  )
+  console.log('in', hootAmountIn)
+  const value = await exchangeIssuance.getAmountOutOnRedeemSet(
+    HOOT_SET_TOKEN_ADDRESS,
+    WETH_ADDRESS,
+    hootAmountIn
+  )
+  console.log('value', value)
+  return preciseMul(value, toWei(.95))
+}
+
 
 export const getSetValue = async (library: any): Promise<BigNumber> => {
   const exchangeIssuance = await getExchangeIssuanceContract(
