@@ -1,21 +1,23 @@
-import 'App.css'
+import { Slide, ToastContainer } from 'react-toastify'
 import {
   ChakraProvider,
-  Heading,
-  Text,
   Flex,
+  Heading,
   Image,
+  Text,
   useDisclosure,
 } from '@chakra-ui/react'
 import { ChainId, useEthers } from '@usedapp/core'
-import { Slide, ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 
-import Layout from 'components/Layout'
-import ConnectButton from 'components/ConnectButton'
 import AccountModal from 'components/AccountModal'
-import VoteList from 'components/VoteList'
+import ConnectButton from 'components/ConnectButton'
+import Layout from 'components/Layout'
+import TokenPercentTable from 'components/TokenPercentTable'
 import TokenPurchase from 'components/TokenPurchase'
+import VoteList from 'components/VoteList'
+
+import 'react-toastify/dist/ReactToastify.css'
+import 'App.css'
 
 function App() {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -77,9 +79,49 @@ const Warning = () => {
 
 const AppContent = () => {
   return (
-    <Flex flexDir='row' justifyContent='space-evenly' w='100vw' mt='30px'>
+    <Flex direction='row' justifyContent='space-evenly' w='100vw' mt='30px'>
+      {/* TODO: stack on smaller screens */}
       <TokenPurchase />
+      <Flex direction='column'>
+        <TokenPercentTable caption='Current Composition' tokens={mockTokens} />
+        <TokenPercentTable
+          caption='Submitted votes for next rebalance'
+          tokens={mockVotes}
+        />
+      </Flex>
       <VoteList />
     </Flex>
   )
 }
+
+// TODO contract data
+const mockTokens = [
+  {
+    name: 'WETH',
+    percent: 22,
+  },
+  {
+    name: 'MATIC',
+    percent: 17,
+  },
+  {
+    name: 'DPI',
+    percent: 11,
+  },
+  {
+    name: 'AAVE',
+    percent: 8,
+  },
+]
+
+// TODO contract votes
+const mockVotes = [
+  {
+    name: 'ETH2x-FLI-P',
+    percent: 28,
+  },
+  {
+    name: 'ELON',
+    percent: 18,
+  },
+]
