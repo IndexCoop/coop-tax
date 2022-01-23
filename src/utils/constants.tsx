@@ -1,6 +1,6 @@
-import { BigNumber } from 'ethers'
+import BigNumber from 'bignumber.js'
 
-export const TEN_POW_18 = BigNumber.from(10).pow(18)
+export const TEN_POW_18 = new BigNumber(10).pow(18)
 
 /** Contract Addresses */
 export const OWL_NFT_ADDRESS =

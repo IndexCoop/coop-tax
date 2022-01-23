@@ -1,5 +1,12 @@
 # Getting Started with Coop.tax
 
+### Dev Notes
+
+- Two different libraries are used to handle BigNumbers:
+  - the implement from `ethers` is naturally included because we use this package for many things
+  - `bignumber.js` was added to handle floats because `ethers`'s is not able to
+  - these two implementations do not work together so conversion is necessary (ex. ether's BigNumber -> .toString() -> bignumber.js's BigNumber)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

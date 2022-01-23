@@ -30,7 +30,7 @@ const TokenPurchase = () => {
   const [allowance, setAllowance] = useState<BigNumber>(BigNumber.from(0))
   const [ethPrice, setEthPrice] = useState<number>(0)
   const [tokenNAV, setTokenNAV] = useState<string>('1')
-  const [tokenMarketCap, setTokenMarketCap] = useState<number>(0)
+  const [tokenMarketCap, setTokenMarketCap] = useState<string>('0')
   const { account, library } = useEthers()
 
   //makes initail check for allowance
@@ -68,7 +68,7 @@ const TokenPurchase = () => {
     })
 
     getHootMarketCap(library).then((tmc) => {
-      setTokenMarketCap(tmc)
+      setTokenMarketCap(tmc.toFixed(0))
     })
   })
 
