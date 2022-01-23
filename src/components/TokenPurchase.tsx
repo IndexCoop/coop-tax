@@ -9,6 +9,7 @@ import {
   NumberInputField,
 } from '@chakra-ui/react'
 
+import { getEthPrice } from 'apis/coingeckoApi'
 import {
   ethersApproveWETH,
   ethersIssueExactSetFromToken,
@@ -16,10 +17,10 @@ import {
   getMaxIn,
   getSetValue,
 } from 'apis/exchangeIssuance'
+import { getHootMarketCap } from 'apis/hootTokenApi'
 import { fromWei, toWei } from 'utils'
 import { toast } from 'react-toastify'
 import { utils } from 'ethers'
-import axios from 'axios'
 
 const TokenPurchase = () => {
   const [tokenAmount, setTokenAmount] = useState<number>(1)
@@ -28,7 +29,8 @@ const TokenPurchase = () => {
     useState<boolean>(false)
   const [allowance, setAllowance] = useState<BigNumber>(BigNumber.from(0))
   const [ethPrice, setEthPrice] = useState<number>(0)
-  const [tokenNAV, setTokenNAV] = useState<string>('$1')
+  const [tokenNAV, setTokenNAV] = useState<string>('1')
+  const [tokenMarketCap, setTokenMarketCap] = useState<number>(0)
   const { account, library } = useEthers()
 
   //makes initail check for allowance
@@ -53,13 +55,9 @@ const TokenPurchase = () => {
   }, [account, allowance, initialAllowanceChecked, library])
 
   useEffect(() => {
-    axios
-      .get(
-        'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd'
-      )
-      .then((result: any) => {
-        setEthPrice(result.data.ethereum.usd as number)
-      })
+    getEthPrice().then((price) => {
+      setEthPrice(price)
+    })
 
     getSetValue(library).then((result: BigNumber) => {
       setTokenNAV(
@@ -67,6 +65,10 @@ const TokenPurchase = () => {
           utils.formatEther(fromWei(result.mul(toWei(ethPrice))))
         ).toFixed(2)
       )
+    })
+
+    getHootMarketCap(library).then((tmc) => {
+      setTokenMarketCap(tmc)
     })
   })
 
@@ -132,7 +134,8 @@ const TokenPurchase = () => {
   return (
     <Flex flexDirection='column' alignItems='center'>
       <Text fontWeight='bold'>HOOT index</Text>
-      <Text fontSize='s'>${tokenNAV}</Text>
+      <Text fontSize='s'>NAV per HOOT: ${tokenNAV}</Text>
+      <Text fontSize='s'>Market Cap: ${tokenMarketCap}</Text>
       <NumberInput
         size='lg'
         width='150px'

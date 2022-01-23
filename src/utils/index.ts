@@ -4,6 +4,7 @@ import {
   ERC20_ABI,
   POLYGON_EXCHANGE_ISSUANCE,
   POLYGON_EXCHANGE_ISSUANCE_ABI,
+  SET_TOKEN_ABI,
 } from './constants'
 import { parseEther } from '@ethersproject/units'
 
@@ -27,6 +28,13 @@ export const getERC20Contract = async (
   address: string
 ): Promise<Contract> => {
   return await new Contract(address, ERC20_ABI, provider)
+}
+
+export const getSetTokenContract = async (
+  provider: Signer | Provider | undefined,
+  address: string
+): Promise<Contract> => {
+  return await new Contract(address, SET_TOKEN_ABI, provider)
 }
 
 export const getAllowance = async (

@@ -1,10 +1,14 @@
+import { BigNumber } from 'ethers'
+
+export const TEN_POW_18 = BigNumber.from(10).pow(18)
+
 /** Contract Addresses */
 export const OWL_NFT_ADDRESS =
   process.env.REACT_APP_OWL_NFT_ADDRESS ||
   '0x79906bE7d10C2CB97793a4Ebd87bd3D52ceda412'
 export const APE_REBALANCE_EXT_ADDRESS =
   process.env.REACT_APP_APE_REBALANCE_EXT_ADDRESS ||
-  '0xa4cAe37e7E6412abB38aEddddB8C12675E8b9915'
+  '0x9cB703Cf5D0a6bbBf13f04FA5A5E2AF087FDda47'
 export const POLYGON_EXCHANGE_ISSUANCE =
   process.env.REACT_APP_POLYGON_EXCHANGE_ISSUANCE ||
   '0x0dC65c883fccC9CAcb34650588C196CcC6D4e762'
@@ -20,7 +24,6 @@ export const HOOT_SET_TOKEN_ADDRESS =
 
 /** API KEYS **/
 export const ALCHEMY_KEY = process.env.REACT_APP_ALCHEMY_KEY
-
 
 /** ABIs */
 export const OWL_NFT_ABI = [
