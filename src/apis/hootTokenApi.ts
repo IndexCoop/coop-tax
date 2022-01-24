@@ -1,6 +1,6 @@
 import { MaticTokens } from '@indexcoop/tokenlists'
-import BigNumber from 'bignumber.js'
-import { utils } from 'ethers'
+import { BigNumber as BigNumberJs } from 'bignumber.js'
+import { BigNumber, utils } from 'ethers'
 
 import { getEthPrice, getTokenPrices } from 'apis/coingeckoApi'
 import { getSetValue } from 'apis/exchangeIssuance'
@@ -31,7 +31,7 @@ const getHootTotalSupply = async (library: any): Promise<number> => {
     )
     const total = await hootContract.totalSupply()
 
-    return new BigNumber(total.toString()).div(TEN_POW_18).toNumber()
+    return new BigNumberJs(total.toString()).div(TEN_POW_18).toNumber()
   } catch (e) {
     console.error(e)
     return 0
@@ -51,7 +51,7 @@ export const getHootMarketCap = async (library: any) => {
 /**
  * Position data of HOOT underlying tokens
  */
-export const getHootPositions = async (library: any): Promise<Position[]> => {
+const getHootPositions = async (library: any): Promise<Position[]> => {
   try {
     const hootContract = await getSetTokenContract(
       library,
@@ -75,22 +75,22 @@ const convertPositionToSetComponent = (
 ): SetComponent => {
   const token = getTokenForPosition(position)
 
-  const quantity = new BigNumber(position.unit.toString()).div(
-    new BigNumber(10).pow(token?.decimals ?? 18)
+  const quantity = new BigNumberJs(position.unit.toString()).div(
+    new BigNumberJs(10).pow(token?.decimals ?? 18)
   )
 
   const totalPriceUsd = quantity.multipliedBy(componentPriceUsd)
 
   const percentOfSet = totalPriceUsd
-    .div(new BigNumber(hootPriceUsd))
+    .div(new BigNumberJs(hootPriceUsd))
     .multipliedBy(100)
 
   return {
     address: position.component,
-    id: token?.name?.toLowerCase() ?? position.component,
+    id: token?.name?.toLowerCase() ?? '',
     quantity: quantity.toString(),
-    symbol: token?.symbol ?? position.component,
-    name: token?.name ?? position.component,
+    symbol: token?.symbol ?? '',
+    name: token?.name ?? '',
     image: token?.logoURI ?? '',
     percentOfSet: percentOfSet.toString(),
     percentOfSetNumber: percentOfSet,
@@ -146,7 +146,6 @@ export const getHootComponents = async (
   return sortPositionsByPercentOfSet(hootComponents)
 }
 
-// TODO refactor global types into their own .d.ts files
 export type SetComponent = {
   /**
    * Token address
@@ -182,7 +181,7 @@ export type SetComponent = {
    * The percent of USD this component makes up in the Set.
    * Equivalant to totalPriceUsd / total price of set in USD
    */
-  percentOfSetNumber: BigNumber
+  percentOfSetNumber: BigNumberJs
 
   /**
    * Quantity of component in the Set
@@ -205,7 +204,7 @@ export type SetComponent = {
 /**
  * The base definition of a SetToken Position
  */
-type Position = {
+export type Position = {
   /**
    * Address of token in the Position
    */
