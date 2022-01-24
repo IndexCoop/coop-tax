@@ -148,7 +148,7 @@ const sortPositionsByPercentOfSet = (
  * @return weights (BigNumber[]) Components weights (not units) as per the vote
 
  */
-const getWeights = async (library: any): Promise<VoteWeights> => {
+export const _getWeights = async (library: any): Promise<VoteWeights> => {
   try {
     const rebalContract = await new Contract(
       APE_REBALANCE_EXT_ADDRESS,
@@ -158,13 +158,13 @@ const getWeights = async (library: any): Promise<VoteWeights> => {
 
     return await rebalContract.getWeights()
   } catch (err) {
-    console.error('getWeights', err)
+    console.error('_getWeights', err)
   }
   return [[], []]
 }
 
 export const getSubmittedVotes = async (library: any) => {
-  const contractWeights = await getWeights(library)
+  const contractWeights = await _getWeights(library)
 
   const adddresses = contractWeights[0]
   const weights = contractWeights[1]

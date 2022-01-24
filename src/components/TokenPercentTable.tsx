@@ -1,13 +1,39 @@
-import { Table, Tbody, Tr, Td, TableCaption, Flex } from '@chakra-ui/react'
+import {
+  Flex,
+  Table,
+  TableCaption,
+  Tbody,
+  Td,
+  Tr,
+  Text,
+  Tooltip,
+} from '@chakra-ui/react'
 
 import { SetComponent } from 'apis/hootTokenApi'
+import { RebalComponent } from 'apis/rebalanceExtension'
 
 type TokenPercentTableProps = {
   caption: string
-  tokens: SetComponent[]
+  tokens: SetComponent[] | RebalComponent[]
+  tableType: 'allocations' | 'votes'
 }
 
-const TokenPercentTable = ({ caption, tokens }: TokenPercentTableProps) => {
+const whichPercent = (token: SetComponent | RebalComponent): string => {
+  let percent = ''
+  if ('percentOfSet' in token) {
+    percent = token.percentOfSet
+  }
+  if ('percentOfRebal' in token) {
+    percent = token.percentOfRebal
+  }
+  return `${Number(percent).toFixed(0)}%`
+}
+
+const TokenPercentTable = ({
+  caption,
+  tokens,
+  tableType,
+}: TokenPercentTableProps) => {
   return (
     <Flex direction='column' alignItems='center' mb='30px'>
       <Table colorScheme='whiteAlpha' size='lg'>
@@ -15,12 +41,24 @@ const TokenPercentTable = ({ caption, tokens }: TokenPercentTableProps) => {
           {caption}
         </TableCaption>
         <Tbody>
-          {tokens.map((token) => (
+          {tokens.length === 0 && tableType === 'votes' && (
             <Tr>
-              <Td>{token.name}</Td>
-              <Td>{token.percentOfSet}%</Td>
+              <Td>Be the first to vote on next week's rebalance!</Td>
             </Tr>
-          ))}
+          )}
+          {tokens.length > 0 &&
+            tokens.map((token) => (
+              <Tr>
+                <Td>
+                  <Tooltip label={token.address}>
+                    <Text isTruncated maxWidth={120}>
+                      {token.symbol || token.address}
+                    </Text>
+                  </Tooltip>
+                </Td>
+                <Td>{whichPercent(token)}</Td>
+              </Tr>
+            ))}
         </Tbody>
       </Table>
     </Flex>

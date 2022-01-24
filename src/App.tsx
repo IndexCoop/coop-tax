@@ -10,11 +10,12 @@ import {
 import { ChainId, useEthers } from '@usedapp/core'
 
 import AccountModal from 'components/AccountModal'
+import CompositionTable from 'components/CompositionTable'
 import ConnectButton from 'components/ConnectButton'
 import Layout from 'components/Layout'
-import TokenPercentTable from 'components/TokenPercentTable'
 import TokenPurchase from 'components/TokenPurchase'
 import VoteList from 'components/VoteList'
+import VoteTable from 'components/VoteTable'
 
 import 'react-toastify/dist/ReactToastify.css'
 import 'App.css'
@@ -62,7 +63,7 @@ const Warning = () => {
         src='https://emojipedia-us.s3.amazonaws.com/source/skype/289/monkey_1f412.png'
         ml='20px'
       />
-      <Text fontSize='xl'>
+      <Text fontSize='xl' color='black'>
         <Text color='red' fontWeight='bold'>
           this is an experiment
         </Text>{' '}
@@ -83,45 +84,10 @@ const AppContent = () => {
       {/* TODO: stack on smaller screens */}
       <TokenPurchase />
       <Flex direction='column'>
-        <TokenPercentTable caption='Current Composition' tokens={mockTokens} />
-        <TokenPercentTable
-          caption='Submitted votes for next rebalance'
-          tokens={mockVotes}
-        />
+        <CompositionTable />
+        <VoteTable />
       </Flex>
       <VoteList />
     </Flex>
   )
 }
-
-// TODO contract data
-const mockTokens = [
-  {
-    name: 'WETH',
-    percent: 22,
-  },
-  {
-    name: 'MATIC',
-    percent: 17,
-  },
-  {
-    name: 'DPI',
-    percent: 11,
-  },
-  {
-    name: 'AAVE',
-    percent: 8,
-  },
-]
-
-// TODO contract votes
-const mockVotes = [
-  {
-    name: 'ETH2x-FLI-P',
-    percent: 28,
-  },
-  {
-    name: 'ELON',
-    percent: 18,
-  },
-]

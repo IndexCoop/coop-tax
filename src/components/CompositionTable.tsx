@@ -19,7 +19,13 @@ const CompositionTable = () => {
       })
   }, [library])
 
-  return <TokenPercentTable caption='Current Composition' tokens={components} />
+  return (
+    <TokenPercentTable
+      tableType='allocations'
+      caption='Current Composition'
+      tokens={components}
+    />
+  )
 }
 
 export default CompositionTable
