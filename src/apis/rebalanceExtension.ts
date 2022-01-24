@@ -1,10 +1,14 @@
 import { formatEther } from '@ethersproject/units'
+import { BigNumber as BigNumberJs } from 'bignumber.js'
 import { BigNumber, Contract } from 'ethers'
 import { toast } from 'react-toastify'
+
 import {
+  TEN_POW_18,
   APE_REBALANCE_EXT_ABI,
   APE_REBALANCE_EXT_ADDRESS,
 } from 'utils/constants'
+import { getTokenForPosition } from 'utils/tokenList'
 
 export const ethersGetVotes = async (
   address: string | null | undefined,
@@ -82,4 +86,129 @@ export const ethersIsTokenLiquid = async (
     })
   }
   return false
+}
+
+/**
+ * Consolidation underlying rebal tokens info into a single component. Info from multiple sources including:
+ * weights from smart contract, tokens metadata from tokenlist, voted allocations
+ */
+const convertPositionToRebalComponent = (
+  position: VotedPosition
+): RebalComponent => {
+  const token = getTokenForPosition(position)
+
+  const votedAllocation = new BigNumberJs(position.weight.toString())
+    .div(TEN_POW_18)
+    .multipliedBy(100)
+
+  return {
+    address: position.component,
+    id: token?.name?.toLowerCase() ?? '',
+    symbol: token?.symbol ?? '',
+    name: token?.name ?? '',
+    image: token?.logoURI ?? '',
+    percentOfRebal: votedAllocation.toString(),
+    percentOfRebalNumber: votedAllocation,
+  }
+}
+
+const sortPositionsByPercentOfSet = (
+  components: RebalComponent[]
+): RebalComponent[] => {
+  return components.sort((a, b) =>
+    b.percentOfRebalNumber.gt(a.percentOfRebalNumber) ? 1 : -1
+  )
+}
+
+/**
+ * getWeights():
+ * @dev Fetches the current top voted components and weights. When the rebalance begins,
+ * it will set the weights to be identical to the weights given by this function. The
+ * weights are measured as the percentage of the total index value, not the unit amounts.
+ * @return components address (string[]) Top voted on components
+ * @return weights (BigNumber[]) Components weights (not units) as per the vote
+
+ */
+export const _getWeights = async (library: any): Promise<VoteWeights> => {
+  try {
+    const rebalContract = await new Contract(
+      APE_REBALANCE_EXT_ADDRESS,
+      APE_REBALANCE_EXT_ABI,
+      library
+    )
+
+    return await rebalContract.getWeights()
+  } catch (err) {
+    console.error('_getWeights', err)
+  }
+  return [[], []]
+}
+
+export const getSubmittedVotes = async (library: any) => {
+  const contractWeights = await _getWeights(library)
+
+  const adddresses = contractWeights[0]
+  const weights = contractWeights[1]
+
+  const votedPositions: VotedPosition[] = adddresses.map((addr, index) => ({
+    component: addr,
+    weight: weights[index],
+  }))
+
+  const votedHootComponents = votedPositions.map(
+    convertPositionToRebalComponent
+  )
+
+  return sortPositionsByPercentOfSet(votedHootComponents)
+}
+
+type VoteWeights = [string[], BigNumber[]]
+
+export type VotedPosition = {
+  component: string
+  weight: BigNumber
+}
+
+export type RebalComponent = {
+  /**
+   * Token address
+   * @example "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984"
+   */
+  address: string
+
+  /**
+   * Token id
+   * @example "uniswap"
+   */
+  id: string
+
+  /**
+   * Token image URL
+   * @example "https://assets.coingecko.com/coins/images/12504/thumb/uniswap-uni.png"
+   */
+  image: string
+
+  /**
+   * Token name
+   * @example "Uniswap"
+   */
+  name: string
+
+  /**
+   * The percent of units this component makes up in the Set.
+   * Equivalant to units / set token units
+   */
+  percentOfRebal: string
+
+  /**
+   * The percent of units this component makes up in the Set.
+   * Equivalant to units / set token units
+   */
+  percentOfRebalNumber: BigNumberJs
+
+  /**
+   * Token symbol
+   * @example "UNI"
+   */
+  symbol: string
 }

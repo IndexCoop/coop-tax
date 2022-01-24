@@ -1,21 +1,24 @@
-import 'App.css'
+import { Slide, ToastContainer } from 'react-toastify'
 import {
   ChakraProvider,
-  Heading,
-  Text,
   Flex,
+  Heading,
   Image,
+  Text,
   useDisclosure,
 } from '@chakra-ui/react'
 import { ChainId, useEthers } from '@usedapp/core'
-import { Slide, ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 
-import Layout from 'components/Layout'
-import ConnectButton from 'components/ConnectButton'
 import AccountModal from 'components/AccountModal'
-import VoteList from 'components/VoteList'
+import CompositionTable from 'components/CompositionTable'
+import ConnectButton from 'components/ConnectButton'
+import Layout from 'components/Layout'
 import TokenPurchase from 'components/TokenPurchase'
+import VoteList from 'components/VoteList'
+import VoteTable from 'components/VoteTable'
+
+import 'react-toastify/dist/ReactToastify.css'
+import 'App.css'
 
 function App() {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -60,7 +63,7 @@ const Warning = () => {
         src='https://emojipedia-us.s3.amazonaws.com/source/skype/289/monkey_1f412.png'
         ml='20px'
       />
-      <Text fontSize='xl'>
+      <Text fontSize='xl' color='black'>
         <Text color='red' fontWeight='bold'>
           this is an experiment
         </Text>{' '}
@@ -77,8 +80,13 @@ const Warning = () => {
 
 const AppContent = () => {
   return (
-    <Flex flexDir='row' justifyContent='space-evenly' w='100vw' mt='30px'>
+    <Flex direction='row' justifyContent='space-evenly' w='100vw' mt='30px'>
+      {/* TODO: stack on smaller screens */}
       <TokenPurchase />
+      <Flex direction='column'>
+        <CompositionTable />
+        <VoteTable />
+      </Flex>
       <VoteList />
     </Flex>
   )

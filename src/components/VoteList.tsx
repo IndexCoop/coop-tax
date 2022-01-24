@@ -14,6 +14,7 @@ import {
 } from 'apis/rebalanceExtension'
 import SelectedTokens from './SelectedTokens'
 import { fromWei, toWei } from 'utils'
+import { TokenData } from 'utils/tokenList'
 
 export const mapTokenDataToOption = (token: TokenData): TokenOption => ({
   value: token.address,
@@ -191,15 +192,6 @@ const VoteList = () => {
 }
 
 export default VoteList
-
-export interface TokenData {
-  chainId: number
-  address: string
-  name: string
-  symbol: string
-  decimals: number
-  logoURI: string
-}
 
 export interface TokenVote {
   address: string
