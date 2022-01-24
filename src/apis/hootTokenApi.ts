@@ -1,4 +1,3 @@
-import { MaticTokens } from '@indexcoop/tokenlists'
 import { BigNumber as BigNumberJs } from 'bignumber.js'
 import { BigNumber, utils } from 'ethers'
 
@@ -7,6 +6,7 @@ import { getSetValue } from 'apis/exchangeIssuance'
 import { TEN_POW_18 } from 'utils/constants'
 import { getSetTokenContract, fromWei, toWei } from 'utils'
 import { HOOT_SET_TOKEN_ADDRESS } from 'utils/constants'
+import { getTokenForPosition } from 'utils/tokenList'
 
 /**
  * Net Asset Value (NAV) per HOOT (USD)
@@ -96,25 +96,6 @@ const convertPositionToSetComponent = (
     percentOfSetNumber: percentOfSet,
     totalPriceUsd: totalPriceUsd.toString(),
   }
-}
-
-const getTokenForPosition = (
-  position: Position,
-  tokenList: TokenData[] = MaticTokens
-): TokenData => {
-  const matchingTokens = tokenList.filter(
-    (t) => t.address.toLowerCase() === position.component.toLowerCase()
-  )
-  if (matchingTokens.length === 0) {
-    console.warn(
-      `No token for position ${position.component} exists in token lists`
-    )
-  } else if (matchingTokens.length > 1) {
-    console.warn(
-      `Multiple tokens for position ${position.component} exist in token lists`
-    )
-  }
-  return matchingTokens[0]
 }
 
 const sortPositionsByPercentOfSet = (
@@ -225,13 +206,4 @@ export type Position = {
    * Arbitrary data
    */
   data: string
-}
-
-export interface TokenData {
-  chainId: number
-  address: string
-  name: string
-  symbol: string
-  decimals: number
-  logoURI: string
 }

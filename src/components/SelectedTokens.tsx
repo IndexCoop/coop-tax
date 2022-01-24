@@ -13,8 +13,8 @@ import { useEffect, useState } from 'react'
 import { CloseIcon } from '@chakra-ui/icons'
 import { useEthers } from '@usedapp/core'
 
-import { TokenData } from './VoteList'
 import { ethersGetVotes } from 'apis/rebalanceExtension'
+import { TokenData } from 'utils/tokenList'
 
 const SelectedTokens = (props: {
   selectedTokens: TokenData[]

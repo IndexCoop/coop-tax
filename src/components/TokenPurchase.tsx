@@ -8,6 +8,8 @@ import {
   NumberInput,
   NumberInputField,
 } from '@chakra-ui/react'
+import { utils } from 'ethers'
+import { toast } from 'react-toastify'
 
 import { getEthPrice } from 'apis/coingeckoApi'
 import {
@@ -19,8 +21,7 @@ import {
 } from 'apis/exchangeIssuance'
 import { getHootMarketCap } from 'apis/hootTokenApi'
 import { fromWei, toWei } from 'utils'
-import { toast } from 'react-toastify'
-import { utils } from 'ethers'
+import { TokenData } from 'utils/tokenList'
 
 const TokenPurchase = () => {
   const [tokenAmount, setTokenAmount] = useState<number>(1)
@@ -167,15 +168,6 @@ const TokenPurchase = () => {
 }
 
 export default TokenPurchase
-
-export interface TokenData {
-  chainId: number
-  address: string
-  name: string
-  symbol: string
-  decimals: number
-  logoURI: string
-}
 
 export interface TokenVote {
   address: string

@@ -1,5 +1,4 @@
 import { formatEther } from '@ethersproject/units'
-import { MaticTokens } from '@indexcoop/tokenlists'
 import { BigNumber as BigNumberJs } from 'bignumber.js'
 import { BigNumber, Contract } from 'ethers'
 import { toast } from 'react-toastify'
@@ -9,6 +8,7 @@ import {
   APE_REBALANCE_EXT_ABI,
   APE_REBALANCE_EXT_ADDRESS,
 } from 'utils/constants'
+import { getTokenForPosition } from 'utils/tokenList'
 
 export const ethersGetVotes = async (
   address: string | null | undefined,
@@ -112,25 +112,6 @@ const convertPositionToRebalComponent = (
   }
 }
 
-const getTokenForPosition = (
-  position: VotedPosition,
-  tokenList: TokenData[] = MaticTokens
-): TokenData => {
-  const matchingTokens = tokenList.filter(
-    (t) => t.address.toLowerCase() === position.component.toLowerCase()
-  )
-  if (matchingTokens.length === 0) {
-    console.warn(
-      `No token for position ${position.component} exists in token lists`
-    )
-  } else if (matchingTokens.length > 1) {
-    console.warn(
-      `Multiple tokens for position ${position.component} exist in token lists`
-    )
-  }
-  return matchingTokens[0]
-}
-
 const sortPositionsByPercentOfSet = (
   components: RebalComponent[]
 ): RebalComponent[] => {
@@ -180,18 +161,10 @@ export const getSubmittedVotes = async (library: any) => {
 
   return sortPositionsByPercentOfSet(votedHootComponents)
 }
-interface TokenData {
-  chainId: number
-  address: string
-  name: string
-  symbol: string
-  decimals: number
-  logoURI: string
-}
 
 type VoteWeights = [string[], BigNumber[]]
 
-type VotedPosition = {
+export type VotedPosition = {
   component: string
   weight: BigNumber
 }
